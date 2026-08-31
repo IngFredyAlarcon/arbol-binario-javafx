@@ -1,0 +1,54 @@
+# Compilados y artefactos de Maven
+/target/
+**/target/
+
+# Archivos de compilación de Java
+*.class
+
+# Archivos de IDEs
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# Dependencias locales de JavaFX / JDK (si usas instalación local)
+# No se suelen versionar, pero puedes dejarlos aquí si tu proyecto los genera.
+# javafx-sdk/
+# jmods/
+
+# Archivos de persistencia local generados por la app
+# Ajusta según la carpeta donde guardes tus archivos de datos
+/data/
+/data/*.txt
+/data/*.dat
+/data/*.json
+/data/*.bin
+**/data/
+**/*.dat
+**/*.json
+**/*.bin
+
+# Archivos de ejecución locales
+*.pid
+*.lock
+
+# Archivos de cobertura / reportes
+coverage/
+htmlReport/
+
+# Si usas Maven Wrapper y no quieres versionar los JAR descargados localmente
+.mvn/wrapper/*.jar
