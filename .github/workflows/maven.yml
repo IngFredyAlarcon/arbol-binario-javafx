@@ -25,4 +25,6 @@ jobs:
           cache: maven
 
       - name: Compile and test
-        run: mvn -B test
+        run: |
+            cd binarytree
+            mvn -B test
