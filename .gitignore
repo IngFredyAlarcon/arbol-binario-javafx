@@ -4,6 +4,7 @@
 
 # Archivos de compilación de Java
 *.class
+binarytree/*.class
 
 # Archivos de IDEs
 .idea/
