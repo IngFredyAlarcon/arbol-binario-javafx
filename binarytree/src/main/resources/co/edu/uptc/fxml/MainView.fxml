@@ -15,7 +15,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/13"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="co.edu.uptc.presentation.controller.MainViewController"
-            stylesheets="@styles.css"
+            stylesheets="@../css/styles.css"
             prefHeight="700.0" prefWidth="1000.0">
 
     <!-- ============ TOP BAR: general tree management (CRUD) ============ -->
