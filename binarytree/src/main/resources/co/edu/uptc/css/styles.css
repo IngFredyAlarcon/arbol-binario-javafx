@@ -88,3 +88,7 @@
     -fx-text-fill: #c0392b;
     -fx-font-weight: bold;
 }
+.info-message {
+    -fx-font-size: 14px;
+    -fx-padding: 5px 0;
+}
