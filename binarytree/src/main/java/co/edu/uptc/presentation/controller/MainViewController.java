@@ -1,12 +1,22 @@
 package co.edu.uptc.presentation.controller;
 
+import java.io.IOException;
+
+import co.edu.uptc.App;
+import co.edu.uptc.domain.exception.ValueNotFoundException;
+import co.edu.uptc.domain.model.BinarySearchTree;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+;
 
 public class MainViewController {
 
@@ -51,6 +61,8 @@ public class MainViewController {
     @FXML
     private TextArea messagesArea;
 
+    private BinarySearchTree tree = new BinarySearchTree();
+
     @FXML
     public void initialize() {
     }
@@ -94,9 +106,17 @@ public class MainViewController {
 
     @FXML
     private void onDeleteValue() {
-
+        try {
+            int value = Integer.parseInt(valueField.getText().trim());
+            tree.delete(value);
+            messagesArea.appendText("Nodo " + value + " eliminado.\n");
+            valueField.clear();
+        } catch (NumberFormatException e) {
+            messagesArea.appendText("Digite un valor entero válido.\n");
+        } catch (ValueNotFoundException e) {
+            messagesArea.appendText(e.getMessage() + "\n");
+        }
     }
-
     // ===== Traversals =====
 
     @FXML
