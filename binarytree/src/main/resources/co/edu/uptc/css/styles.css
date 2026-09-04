@@ -1,0 +1,90 @@
+/* styles.css */
+
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: #f4f6f8;
+}
+
+.section-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 4 0;
+}
+
+.top-bar {
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.button {
+    -fx-background-color: #3f7cac;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-padding: 8 14 8 14;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+.button:hover { -fx-background-color: #336491; }
+.button:pressed { -fx-background-color: #274b6d; }
+.button:disabled {
+    -fx-background-color: #b0bec5;
+    -fx-text-fill: #eceff1;
+}
+
+.button-primary { -fx-background-color: #2e8b57; }
+.button-primary:hover { -fx-background-color: #256e45; }
+
+.button-danger { -fx-background-color: #c0392b; }
+.button-danger:hover { -fx-background-color: #992d22; }
+
+.text-field, .text-area, .combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #cfd8dc;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4;
+}
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #3f7cac;
+}
+
+.side-panel {
+    -fx-padding: 15;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 1 0 0;
+}
+
+.tree-panel {
+    -fx-background-color: white;
+    -fx-border-color: #dfe4e8;
+    -fx-border-width: 1;
+}
+
+.tree-node {
+    -fx-fill: #3f7cac;
+    -fx-stroke: #274b6d;
+    -fx-stroke-width: 1.5;
+}
+.tree-line {
+    -fx-stroke: #90a4ae;
+    -fx-stroke-width: 1.5;
+}
+.node-text {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+.success-message {
+    -fx-text-fill: #2e8b57;
+    -fx-font-weight: bold;
+}
+.error-message {
+    -fx-text-fill: #c0392b;
+    -fx-font-weight: bold;
+}
