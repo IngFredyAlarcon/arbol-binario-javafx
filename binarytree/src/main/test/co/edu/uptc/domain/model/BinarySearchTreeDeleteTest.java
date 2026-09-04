@@ -1,13 +1,10 @@
 package co.edu.uptc.domain.model;
-
-import co.edu.uptc.domain.exception.ValueNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 class BinarySearchTreeDeleteTest {
 
@@ -21,7 +18,7 @@ class BinarySearchTreeDeleteTest {
 
         tree.delete(5);
 
-        assertFalse(tree.contains(5));
+        assertEquals(false, tree.contains(5));
         assertEquals(List.of(10, 20), tree.inOrder());
     }
 
@@ -35,7 +32,7 @@ class BinarySearchTreeDeleteTest {
 
         tree.delete(20);
 
-        assertFalse(tree.contains(20));
+        assertEquals(false, tree.contains(20));
         assertEquals(List.of(10, 25), tree.inOrder());
     }
 
@@ -49,7 +46,7 @@ class BinarySearchTreeDeleteTest {
 
         tree.delete(5);
 
-        assertFalse(tree.contains(5));
+        assertEquals(false, tree.contains(5));
         assertEquals(List.of(3, 10), tree.inOrder());
     }
 
@@ -67,7 +64,7 @@ class BinarySearchTreeDeleteTest {
 
         tree.delete(50);
 
-        assertFalse(tree.contains(50));
+        assertEquals(false, tree.contains(50));
         assertEquals(List.of(20, 30, 40, 60, 70, 80), tree.inOrder());
     }
 }

@@ -109,10 +109,10 @@ public class MainViewController {
         try {
             int value = Integer.parseInt(valueField.getText().trim());
             tree.delete(value);
-            messagesArea.appendText("Nodo " + value + " eliminado.\n");
+            messagesArea.appendText("Nodo " + value + " eliminado\n");
             valueField.clear();
         } catch (NumberFormatException e) {
-            messagesArea.appendText("Digite un valor entero válido.\n");
+            messagesArea.appendText("Digite un valor entero valido\n");
         } catch (ValueNotFoundException e) {
             messagesArea.appendText(e.getMessage() + "\n");
         }
