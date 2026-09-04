@@ -6,6 +6,11 @@ public class Node {
     private Node left;
     private Node right;
 
+    
+    //Constructor vacío para hacer uso del repositorío Json
+    public Node() {
+    }
+
     public Node(int value) {
         this.value = value;
     }
