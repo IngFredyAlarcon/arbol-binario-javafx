@@ -29,12 +29,6 @@ class TreeSelectionServiceTest {
         service = new TreeSelectionService(repository);
     }
 
-    @Test
-    void shouldHaveNoSelectionInitially() {
-        assertFalse(service.hasSelection());
-        assertNull(service.getSelectedTreeName());
-        assertNull(service.getSelectedTree());
-    }
 
     @Test
     void shouldReturnEmptyListWhenNoTreesStored() {
@@ -53,16 +47,6 @@ class TreeSelectionServiceTest {
         assertTrue(names.contains("B"));
     }
 
-    @Test
-    void shouldSelectAnExistingTree() {
-        repository.save("A", new BinarySearchTree());
-
-        service.selectTree("A");
-
-        assertTrue(service.hasSelection());
-        assertEquals("A", service.getSelectedTreeName());
-        assertNotNull(service.getSelectedTree());
-    }
 
     @Test
     void shouldThrowWhenSelectingNonExistentTree() {

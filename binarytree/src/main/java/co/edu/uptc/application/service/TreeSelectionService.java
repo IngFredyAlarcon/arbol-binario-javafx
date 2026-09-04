@@ -27,10 +27,6 @@ public class TreeSelectionService {
         this.selectedTreeName = name;
     }
 
-    public boolean hasSelection() {
-        return selectedTreeName != null;
-    }
-
     public String getSelectedTreeName() {
         return selectedTreeName;
     }
