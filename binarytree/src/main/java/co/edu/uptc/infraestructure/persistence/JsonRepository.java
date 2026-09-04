@@ -30,15 +30,8 @@ public class JsonRepository implements BinaryTreeRepository{
     }
     @Override
     public List<BinaryTree> findAll() {
-        List<BinaryTree> treeList=new ArrayList<>();
-        try(FileReader reader = new FileReader(fileName)) {
-            Type type = new TypeToken<List<BinaryTree>>(){}.getType();
-          treeList= gson.fromJson(reader,type);
-          
-        } catch (Exception e) {
-            System.err.println("Error al leer el archivo json "+fileName+" :"+e.getMessage());
-        }
-        return  treeList;
+       
+        return  null;
     }
     @Override
     /**Método que se encarga de almacenar la lista de árboles en archivo JSON

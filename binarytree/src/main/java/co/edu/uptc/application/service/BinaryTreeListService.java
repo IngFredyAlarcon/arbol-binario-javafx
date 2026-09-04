@@ -30,13 +30,6 @@ public class BinaryTreeListService {
     public void sendListToRepository(){
         repository.saveAll(treeList);
     }
-    /**Método para añadir un nuevo árbol a la lista  
-     * 
-     * @param tree nuevo árbol que se añade a la lista
-     */
-    public void saveTree(BinaryTree tree){
-        treeList.add(tree);
-    }
 
     
 
