@@ -1,7 +1,6 @@
 package co.edu.uptc.presentation.controller;
 
 import co.edu.uptc.domain.exception.DuplicateTreeException;
-import co.edu.uptc.domain.exception.TreeNameTooLongException;
 import co.edu.uptc.domain.model.TreeManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -39,7 +38,7 @@ public class CreateTreeController {
         String treeName = treeNameField.getText().trim();
 
         if (treeName.isEmpty()) {
-            messageLabel.setText("❌ Por favor, ingrese un nombre para el árbol.");
+            messageLabel.setText("Por favor, ingrese un nombre para el árbol.");
             messageLabel.setStyle("-fx-text-fill: #c0392b;");
             return;
         }
@@ -70,20 +69,9 @@ public class CreateTreeController {
                 }
             }).start();
 
-        } catch (TreeNameTooLongException e) {
-            // Mostrar mensaje de error por nombre demasiado largo
-            messageLabel.setText("❌ " + e.getMessage());
-            messageLabel.setStyle("-fx-text-fill: #c0392b;");
-            
-            // Opcional: resaltar el campo de texto para indicar el error
-            treeNameField.setStyle("-fx-border-color: #c0392b; -fx-border-width: 2px;");
-            
         } catch (DuplicateTreeException e) {
             messageLabel.setText("❌ " + e.getMessage());
             messageLabel.setStyle("-fx-text-fill: #c0392b;");
-            
-            // Limpiar el resaltado del campo si estaba resaltado
-            treeNameField.setStyle(null);
         }
     }
 
