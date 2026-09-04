@@ -64,6 +64,28 @@ class TreeSelectionServiceTest {
         assertEquals("B", service.getSelectedTreeName());
     }
 
+    @Test
+    void shouldLoadTheActualContentOfTheSelectedTree() {
+        BinarySearchTree balanced = new BinarySearchTree();
+        balanced.insert(50);
+        balanced.insert(30);
+        balanced.insert(70);
+        repository.save("Balanceado", balanced);
+
+        BinarySearchTree empty = new BinarySearchTree();
+        repository.save("Vacio", empty);
+
+        service.selectTree("Balanceado");
+        BinarySearchTree loaded = service.getSelectedTree();
+
+        assertNotNull(loaded);
+        assertEquals(3, loaded.size());
+        assertEquals(List.of(30, 50, 70), loaded.inOrder());
+
+        service.selectTree("Vacio");
+        assertTrue(service.getSelectedTree().isEmpty());
+    }
+
     private static class FakeBinaryTreeRepository implements BinaryTreeRepository {
         private final Map<String, BinarySearchTree> trees = new HashMap<>();
 

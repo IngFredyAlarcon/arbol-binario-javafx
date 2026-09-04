@@ -70,7 +70,29 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
+        seedSampleTrees();
         refreshTreeCombo();
+    }
+
+    /**
+     * Carga árboles de ejemplo en el repositorio para poder probar la carga
+     * de árboles (RF-11) mientras no exista la creación/guardado de árboles
+     * desde la interfaz (RF pendientes).
+     */
+    private void seedSampleTrees() {
+        BinarySearchTree balanced = new BinarySearchTree();
+        for (int value : new int[] {50, 30, 70, 20, 40, 60, 80}) {
+            balanced.insert(value);
+        }
+        repository.save("Árbol balanceado", balanced);
+
+        BinarySearchTree ascending = new BinarySearchTree();
+        for (int value : new int[] {10, 20, 30, 40, 50}) {
+            ascending.insert(value);
+        }
+        repository.save("Árbol ascendente", ascending);
+
+        repository.save("Árbol vacío", new BinarySearchTree());
     }
 
     private void refreshTreeCombo() {
