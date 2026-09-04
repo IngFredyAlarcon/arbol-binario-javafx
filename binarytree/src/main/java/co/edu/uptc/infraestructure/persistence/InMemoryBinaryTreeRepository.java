@@ -18,26 +18,6 @@ public class InMemoryBinaryTreeRepository implements BinaryTreeRepository {
 
     private final Map<String, BinarySearchTree> trees = new LinkedHashMap<>();
 
-    public InMemoryBinaryTreeRepository() {
-        seedSampleTrees();
-    }
-
-    private void seedSampleTrees() {
-        BinarySearchTree treeA = new BinarySearchTree();
-        treeA.insert(50);
-        treeA.insert(30);
-        treeA.insert(70);
-        treeA.insert(20);
-        trees.put("Árbol A", treeA);
-
-        BinarySearchTree treeB = new BinarySearchTree();
-        treeB.insert(10);
-        treeB.insert(5);
-        trees.put("Árbol B", treeB);
-
-        trees.put("Árbol vacío", new BinarySearchTree());
-    }
-
     @Override
     public void save(String name, BinarySearchTree tree) {
         trees.put(name, tree);
