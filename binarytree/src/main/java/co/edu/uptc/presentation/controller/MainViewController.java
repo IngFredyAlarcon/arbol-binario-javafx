@@ -1,7 +1,13 @@
 package co.edu.uptc.presentation.controller;
 
+import java.util.Optional;
+
+import co.edu.uptc.application.service.EliminarArbolService;
+import co.edu.uptc.infraestructure.persistence.JsonBinaryTreeRepository;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -51,8 +57,12 @@ public class MainViewController {
     @FXML
     private TextArea messagesArea;
 
+    private EliminarArbolService sv;
+
     @FXML
     public void initialize() {
+        this.sv = new EliminarArbolService(new JsonBinaryTreeRepository());
+        comboTrees.getItems().setAll(sv.obtenerNombresArboles());
     }
 
     // ===== Tree management (CRUD) =====
@@ -79,7 +89,37 @@ public class MainViewController {
 
     @FXML
     private void onDeleteTree() {
+        String arbolSeleccionado = comboTrees.getValue();
 
+        // 1. Valida si hay un arbol seleccionado o no
+        if (arbolSeleccionado == null || arbolSeleccionado.trim().isEmpty()) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Advertencia", "Por favor seleccione un árbol primero.");
+            return;
+        }
+
+        // 2. Manda una alerta para confirmar o cancelar la eliminacion del arbol
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmar eliminación");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText("¿Está seguro de que desea eliminar el árbol '" + arbolSeleccionado + "'?");
+
+        Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+        // 3. Elimina el arbol en el JSON y de forma visual en el comboBox
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                sv.eliminarArbol(arbolSeleccionado);
+                
+                comboTrees.getItems().remove(arbolSeleccionado);
+                comboTrees.setValue(null);
+
+                if (messagesArea != null) {
+                    messagesArea.appendText("Árbol '" + arbolSeleccionado + "' eliminado del archivo JSON.\n");
+                }
+            } catch (Exception e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el árbol: " + e.getMessage());
+            }
+        }
     }
 
     @FXML
@@ -111,5 +151,13 @@ public class MainViewController {
     @FXML
     private void onPostorder() {
 
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 }
