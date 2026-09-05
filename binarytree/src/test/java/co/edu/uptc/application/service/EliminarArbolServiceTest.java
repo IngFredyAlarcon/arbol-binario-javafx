@@ -20,21 +20,30 @@ public class EliminarArbolServiceTest {
     private EliminarArbolService sv;
     private JsonBinaryTreeRepository rep;
 
+  
+
     @BeforeEach
     public void setUp() {
         rep = new JsonBinaryTreeRepository() {
-            private final Map<String, BinarySearchTree> memory = new HashMap<>();
+            private Map<String, BinarySearchTree> memory;
 
-            @Override public void save(String name, BinarySearchTree tree) { memory.put(name, tree); }
-            @Override public BinarySearchTree findByName(String name) { return memory.get(name); }
-            @Override public List<String> findAll() { return new ArrayList<>(memory.keySet()); }
-            @Override public void delete(String name) { memory.remove(name); }
-            @Override public boolean exists(String name) { return memory.containsKey(name); }
+            private Map<String, BinarySearchTree> getMemory() {
+                if (memory == null) {
+                    memory = new HashMap<>();
+                }
+                return memory;
+            }
+
+            @Override public void save(String name, BinarySearchTree tree) { getMemory().put(name, tree); }
+            @Override public BinarySearchTree findByName(String name) { return getMemory().get(name); }
+            @Override public List<String> findAll() { return new ArrayList<>(getMemory().keySet()); }
+            @Override public void delete(String name) { getMemory().remove(name); }
+            @Override public boolean exists(String name) { return getMemory().containsKey(name); }
         };
 
-        rep.save("Arbol 1", new BinarySearchTree());
-        sv = new EliminarArbolService(rep);
-    }
+    rep.save("Arbol 1", new BinarySearchTree());
+    sv = new EliminarArbolService(rep);
+}
 
     @Test
     public void testEliminarArbolExitoso() {
