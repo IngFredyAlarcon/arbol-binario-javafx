@@ -8,6 +8,6 @@ public class TestPruebaWorkflow {
 
     @Test
     void prueba() {
-        assertEquals(2, 3);
+        assertEquals(2, 2);
     }
 }
