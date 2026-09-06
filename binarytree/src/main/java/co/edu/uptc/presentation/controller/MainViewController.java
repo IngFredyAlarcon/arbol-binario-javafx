@@ -4,6 +4,7 @@ import co.edu.uptc.App;
 import co.edu.uptc.domain.exception.DuplicateTreeException;
 import co.edu.uptc.domain.model.BinaryTree;
 import co.edu.uptc.domain.model.TreeManager;
+import co.edu.uptc.infraestructure.persistence.JsonRepository;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -63,7 +64,7 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
-        treeManager = new TreeManager();
+        treeManager = new TreeManager(new JsonRepository("TreeRepository.json"));
         refreshTreeComboBox();
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
