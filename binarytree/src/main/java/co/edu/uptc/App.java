@@ -19,8 +19,8 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("MainView"), 640, 480);
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
-        
     }
 
     static void setRoot(String fxml) throws IOException {
