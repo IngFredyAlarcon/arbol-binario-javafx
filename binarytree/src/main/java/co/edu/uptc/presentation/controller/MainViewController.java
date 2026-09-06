@@ -3,6 +3,9 @@ package co.edu.uptc.presentation.controller;
 import java.util.Optional;
 
 import co.edu.uptc.application.service.EliminarArbolService;
+import co.edu.uptc.domain.exception.NoTreeSelectedException;
+import co.edu.uptc.domain.exception.TreeNotFoundException;
+import co.edu.uptc.infraestructure.exception.PersistenceException;
 import co.edu.uptc.infraestructure.persistence.JsonBinaryTreeRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -90,11 +93,11 @@ public class MainViewController {
     @FXML
     private void onDeleteTree() {
         String arbolSeleccionado = comboTrees.getValue();
-
+        try {
+            
         // 1. Valida si hay un arbol seleccionado o no
         if (arbolSeleccionado == null || arbolSeleccionado.trim().isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Advertencia", "Por favor seleccione un árbol primero.");
-            return;
+            throw new NoTreeSelectedException();
         }
 
         // 2. Manda una alerta para confirmar o cancelar la eliminacion del arbol
@@ -107,7 +110,7 @@ public class MainViewController {
 
         // 3. Elimina el arbol en el JSON y de forma visual en el comboBox
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            try {
+            
                 sv.eliminarArbol(arbolSeleccionado);
                 
                 comboTrees.getItems().remove(arbolSeleccionado);
@@ -116,11 +119,18 @@ public class MainViewController {
                 if (messagesArea != null) {
                     messagesArea.appendText("Árbol '" + arbolSeleccionado + "' eliminado del archivo JSON.\n");
                 }
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el árbol: " + e.getMessage());
             }
-        }
+            } catch (NoTreeSelectedException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida", e.getMessage());
+            } catch (TreeNotFoundException e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Árbol no encontrado", e.getMessage());
+            } catch (PersistenceException e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de archivo", "No se pudo actualizar el archivo: " + e.getMessage());
+            } catch (Exception e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error inesperado", "Ocurrió un error no controlado: " + e.getMessage());
+            }
     }
+    
 
     @FXML
     private void onInsert() {

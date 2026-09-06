@@ -18,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 
 import co.edu.uptc.domain.model.BinarySearchTree;
 import co.edu.uptc.domain.repository.BinaryTreeRepository;
+import co.edu.uptc.infraestructure.exception.PersistenceException;
 
 /**
  * Persistencia de prueba para el metodo de eliminar el arbol
@@ -66,10 +67,11 @@ public class JsonBinaryTreeRepository implements BinaryTreeRepository {
         
             if (data != null) {
                 return data;
-            }
-            return new HashMap<>();
+            } else {
+                return new HashMap<>();
+            }    
         } catch (IOException e) {
-            return new HashMap<>();
+            throw new PersistenceException("Error al leer el archivo JSON de árboles.",e);
         }
     }
 
@@ -77,7 +79,7 @@ public class JsonBinaryTreeRepository implements BinaryTreeRepository {
         try (Writer writer = new FileWriter(FILE_PATH)) {
             gson.toJson(data, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new PersistenceException("Error al escribir los datos en el archivo JSON.", e);
         }
     }
 
