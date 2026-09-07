@@ -1,22 +1,20 @@
 package co.edu.uptc.presentation.controller;
 
 
+import co.edu.uptc.domain.exception.DuplicateTreeException;
 import co.edu.uptc.domain.exception.DuplicateValueException;
 import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.domain.model.BinaryTree;
 import co.edu.uptc.domain.model.TreeManager;
-import co.edu.uptc.App;
+
 import co.edu.uptc.Export.PdfTreeExporter;
 import co.edu.uptc.presentation.TreeDrawer;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+
 import javafx.stage.Window;
 
 import java.io.File;
@@ -63,9 +61,23 @@ public class TreeDrawController {
 
     @FXML
     public void initialize() {
-        treeManager = new TreeManager();
-        refreshTreeComboBox();
-        logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
+            // --- SOLO PARA PROBAR: quitar después ---
+    try {
+        treeManager.createTree("prueba");
+        BinaryTree arbol = treeManager.getTree("prueba");
+        int[] valores = {50, 30, 70, 20, 40, 60, 80};
+        for (int v : valores) {
+            arbol.insert(v);
+        }
+    } catch (DuplicateTreeException e) {
+        e.printStackTrace();
+    }
+    // --- FIN BLOQUE DE PRUEBA ---
+        
+        
+        //treeManager = new TreeManager();
+        //refreshTreeComboBox();
+        //logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
 
     // Método para refrescar el ComboBox con los nombres de los árboles
