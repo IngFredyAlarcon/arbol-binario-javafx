@@ -48,15 +48,12 @@ public class CreateTreeController {
             messageLabel.setText("✅ Árbol '" + treeName + "' creado correctamente.");
             messageLabel.setStyle("-fx-text-fill: #2e8b57;");
 
-            // Actualizar el combo en la vista principal
             if (mainController != null) {
                 mainController.refreshTreeComboBox();
             }
 
-            // Limpiar el campo
             treeNameField.clear();
 
-            // Cerrar la ventana después de 1.5 segundos
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);

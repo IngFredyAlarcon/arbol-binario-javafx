@@ -86,20 +86,16 @@ public class MainViewController {
     @FXML
     private void onCreateTree() {
         try {
-            // Cargar la vista de creación de árbol
             FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/CreateTreeView.fxml"));
             Parent root = loader.load();
-
-            // Obtener el controlador y pasarle el TreeManager y este controlador
             CreateTreeController controller = loader.getController();
             controller.setTreeManager(treeManager);
             controller.setMainController(this);
 
-            // Crear una nueva ventana (Stage)
             Stage stage = new Stage();
             stage.setTitle("Crear nuevo árbol");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana principal
+            stage.initModality(Modality.APPLICATION_MODAL); 
             stage.setResizable(false);
             stage.showAndWait();
 
@@ -111,13 +107,11 @@ public class MainViewController {
 
     @FXML
     private void onLoadTree() {
-        // TODO: Implementar carga de árbol desde archivo
         logMessage("Función de carga en desarrollo...");
     }
 
     @FXML
     private void onSaveTree() {
-        // TODO: Implementar guardado de árbol
         logMessage("Función de guardado en desarrollo...");
     }
 
@@ -164,12 +158,8 @@ public class MainViewController {
         }
         try {
             int valueToSearch = Integer.parseInt(input.trim());
-            
-            // Llama al servicio que inserta el nuevo
             treeManager.insertValue(selected, valueToSearch);
-            // Muestra el mensaje de éxito
             messagesArea.setText("¡Nodo "+ input+" agregado al arbol " + selected + " encontrado!");
-            
             BinaryTree currenTree= treeManager.getTree(selected);
             updateTreeDrawing(currenTree);
             valueField.clear();
@@ -199,14 +189,8 @@ public class MainViewController {
 
         try {
             int valueToSearch = Integer.parseInt(input.trim());
-            
-            // Llama al servicio
             Node foundNode = treeManager.searchNode(selected,valueToSearch);
-            
-            // Muestra el mensaje de éxito
             messagesArea.setText("¡Nodo " + foundNode.getValue() + " encontrado!");
-            
-            // Resalta el nodo en pantalla
             highlightNodeInPanel(valueToSearch);
 
         } catch (NumberFormatException e) {
@@ -215,39 +199,32 @@ public class MainViewController {
             messagesArea.setText("El valor no existe en el árbol.");
             resetNodeStyles();
         } catch (IllegalStateException e) {
-            // AQUÍ ATRAPAMOS EL ERROR QUE TE SALIÓ EN CONSOLA
             messagesArea.setText("Error de estado: " + e.getMessage());
         } catch (Exception e) {
-            // Captura de seguridad para cualquier otro error imprevisto
             messagesArea.setText("Error inesperado: " + e.getMessage());
         }
     }
 
     @FXML
     private void onDeleteValue() {
-        // TODO: Implementar eliminación de valor
         logMessage("Función de eliminación de valor en desarrollo...");
     }
 
     @FXML
     private void onPreorder() {
-        // TODO: Implementar recorrido preorden
         logMessage("Recorrido preorden en desarrollo...");
     }
 
     @FXML
     private void onInorder() {
-        // TODO: Implementar recorrido inorden
         logMessage("Recorrido inorden en desarrollo...");
     }
 
     @FXML
     private void onPostorder() {
-        // TODO: Implementar recorrido postorden
         logMessage("Recorrido postorden en desarrollo...");
     }
 
-    // Métodos auxiliares
     private void logMessage(String message) {
         messagesArea.appendText(message + "\n");
     }
@@ -268,36 +245,27 @@ public class MainViewController {
         treeDrawingPanel.getChildren().clear(); 
 
         if (tree != null && tree.getRoot() != null) {
-            // Obtener el ancho dinámico del panel o usar el valor preferido como respaldo
             double width = treeDrawingPanel.getWidth();
             if (width <= 0) {
                 width = treeDrawingPanel.getPrefWidth() > 0 ? treeDrawingPanel.getPrefWidth() : 800;
             }
-
-            // Margen de seguridad (40px) a los lados para que el radio del círculo y textos largos no se salgan
             double padding = 40;
             double minX = padding;
             double maxX = width - padding;
             
-            double startY = 50;  // Margen superior
-            double yOffset = 60; // Distancia vertical entre niveles
+            double startY = 50; 
+            double yOffset = 60; 
             
             drawNodeRecursive(tree.getRoot(), minX, maxX, startY, yOffset);
         }
     }
 
-    /**
-     * Dibuja el árbol basándose en la división del espacio disponible (minX a maxX).
-     */
+
     private void drawNodeRecursive(Node node, double minX, double maxX, double y, double yOffset) {
         if (node == null) return;
-
-        // La posición X del nodo actual es exactamente el centro de su espacio asignado
         double currentX = (minX + maxX) / 2;
 
-        // 1. Dibujar línea e hijo izquierdo
         if (node.getLeft() != null) {
-            // El espacio del hijo izquierdo va desde el inicio de este sector (minX) hasta la posición del padre (currentX)
             double leftChildX = (minX + currentX) / 2; 
             
             javafx.scene.shape.Line leftLine = new javafx.scene.shape.Line(currentX, y, leftChildX, y + yOffset);
@@ -306,9 +274,8 @@ public class MainViewController {
             drawNodeRecursive(node.getLeft(), minX, currentX, y + yOffset, yOffset);
         }
 
-        // 2. Dibujar línea e hijo derecho
+
         if (node.getRight() != null) {
-            // El espacio del hijo derecho va desde la posición del padre (currentX) hasta el final de este sector (maxX)
             double rightChildX = (currentX + maxX) / 2;
             
             javafx.scene.shape.Line rightLine = new javafx.scene.shape.Line(currentX, y, rightChildX, y + yOffset);
@@ -317,13 +284,10 @@ public class MainViewController {
             drawNodeRecursive(node.getRight(), currentX, maxX, y + yOffset, yOffset);
         }
 
-        // 3. Dibujar el nodo actual sobre las líneas
         javafx.scene.layout.StackPane nodeUI = createNodeUI(node.getValue(), currentX, y);
         treeDrawingPanel.getChildren().add(nodeUI);
     }
-    /**
-     * Crea el componente gráfico individual con sintaxis clásica de Java.
-     */
+
     private javafx.scene.layout.StackPane createNodeUI(int value, double x, double y) {
         javafx.scene.shape.Circle circle = new javafx.scene.shape.Circle(20);
         circle.getStyleClass().add("tree-node");
@@ -332,32 +296,20 @@ public class MainViewController {
         text.getStyleClass().add("node-text");
 
         javafx.scene.layout.StackPane group = new javafx.scene.layout.StackPane(circle, text);
-        // Centramos el StackPane usando el radio del círculo (20)
         group.setLayoutX(x - 20);
         group.setLayoutY(y - 20);
-        group.setUserData(value); // Guardamos el valor para que la búsqueda funcione luego
+        group.setUserData(value); 
 
         return group;
     }
 
-    /**
-     * Busca el nodo visual en el panel y lo resalta.
-     */
-    private void highlightNodeInPanel(int targetValue) {
-        // 1. Limpiamos cualquier resaltado anterior
-        resetNodeStyles();
 
-        // 2. Recorremos los dibujos del panel
+    private void highlightNodeInPanel(int targetValue) {
+        resetNodeStyles();
         for (javafx.scene.Node element : treeDrawingPanel.getChildren()) {
-            
-            // 3. Filtramos los contenedores de nodos (StackPane)
             if (element instanceof javafx.scene.layout.StackPane) {
                 javafx.scene.layout.StackPane nodeGroup = (javafx.scene.layout.StackPane) element;
-                
-                // 4. Comparamos el "post-it" (UserData) con el valor buscado
                 if (nodeGroup.getUserData() != null && (int) nodeGroup.getUserData() == targetValue) {
-                    
-                    // 5. Encontramos el correcto, buscamos su círculo y lo pintamos
                     for (javafx.scene.Node child : nodeGroup.getChildren()) {
                         if (child instanceof javafx.scene.shape.Circle) {
                             javafx.scene.shape.Circle circle = (javafx.scene.shape.Circle) child;
@@ -369,9 +321,6 @@ public class MainViewController {
         }
     }
 
-    /**
-     * Limpia el estilo de todos los círculos para devolverlos a la normalidad.
-     */
     private void resetNodeStyles() {
         for (javafx.scene.Node element : treeDrawingPanel.getChildren()) {
             if (element instanceof javafx.scene.layout.StackPane) {
@@ -379,7 +328,7 @@ public class MainViewController {
                 for (javafx.scene.Node child : nodeGroup.getChildren()) {
                     if (child instanceof javafx.scene.shape.Circle) {
                         javafx.scene.shape.Circle circle = (javafx.scene.shape.Circle) child;
-                        circle.setStyle(""); // Borra el CSS inyectado
+                        circle.setStyle(""); 
                     }
                 }
             }
