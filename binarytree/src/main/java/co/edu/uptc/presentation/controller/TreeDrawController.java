@@ -62,6 +62,7 @@ public class TreeDrawController {
     @FXML
     public void initialize() {
             // --- SOLO PARA PROBAR: quitar después ---
+    treeManager = new TreeManager();
     try {
         treeManager.createTree("prueba");
         BinaryTree arbol = treeManager.getTree("prueba");
@@ -75,9 +76,9 @@ public class TreeDrawController {
     // --- FIN BLOQUE DE PRUEBA ---
         
         
-        //treeManager = new TreeManager();
-        //refreshTreeComboBox();
-        //logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
+  
+        refreshTreeComboBox();
+        logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
 
     // Método para refrescar el ComboBox con los nombres de los árboles
