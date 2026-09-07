@@ -18,7 +18,6 @@
         <HBox fx:id="topBar" spacing="10.0" styleClass="top-bar">
             <Label text="Árbol activo:" />
             <ComboBox fx:id="comboTrees" prefWidth="180.0" onAction="#onSelectTree" />
-            <Button fx:id="btnNewTree" text="Crear árbol" onAction="#onCreateTree" styleClass="button-primary" />
             <Button fx:id="btnLoadTree" text="Cargar árbol" onAction="#onLoadTree" />
             <Button fx:id="btnSaveTree" text="Guardar árbol" onAction="#onSaveTree" />
             <Button fx:id="btnDeleteTree" text="Eliminar árbol" onAction="#onDeleteTree" styleClass="button-danger" />

@@ -1,23 +1,32 @@
 package co.edu.uptc.presentation.controller;
 
 
+import co.edu.uptc.domain.exception.DuplicateValueException;
+import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.domain.model.BinaryTree;
 import co.edu.uptc.domain.model.TreeManager;
+import co.edu.uptc.App;
 import co.edu.uptc.Export.PdfTreeExporter;
 import co.edu.uptc.presentation.TreeDrawer;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 
 public class TreeDrawController {
 
-    @FXML
+     @FXML
     private ComboBox<String> comboTrees;
     @FXML
     private Button btnNewTree;
@@ -70,6 +79,129 @@ public class TreeDrawController {
         }
         redrawSelectedTree();
     }
+
+    
+    @FXML
+    private void onLoadTree() {
+        // TODO: Implementar carga de árbol desde archivo (RF10)
+        logMessage("Función de carga en desarrollo...");
+    }
+
+    @FXML
+    private void onSaveTree() {
+        // TODO: Implementar guardado de árbol (RF09)
+        logMessage("Función de guardado en desarrollo...");
+    }
+
+    @FXML
+    private void onDeleteTree() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol para eliminar.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar eliminación");
+        alert.setHeaderText("¿Estás seguro de eliminar el árbol '" + selected + "'?");
+        alert.setContentText("Esta acción no se puede deshacer.");
+
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            treeManager.deleteTree(selected);
+            refreshTreeComboBox();
+            logMessage("Árbol '" + selected + "' eliminado.");
+        }
+    }
+
+    @FXML
+    private void onSelectTree() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            logMessage("Árbol seleccionado: " + selected);
+        }
+        redrawSelectedTree();
+    }
+
+    // ---------- RF02: Insertar ----------
+    @FXML
+    private void onInsert() {
+        BinaryTree tree = getArbolSeleccionado();
+        if (tree == null) return;
+
+        Integer valor = leerValorEntero();
+        if (valor == null) return;
+
+        try {
+            tree.insert(valor);
+            showSuccess("El valor " + valor + " fue insertado correctamente.");
+            valueField.clear();
+            redrawSelectedTree();
+        } catch (DuplicateValueException e) {
+            showError(e.getMessage());
+        }
+    }
+
+    // ---------- RF03: Buscar ----------
+    @FXML
+    private void onSearch() {
+        BinaryTree tree = getArbolSeleccionado();
+        if (tree == null) return;
+
+        Integer valor = leerValorEntero();
+        if (valor == null) return;
+
+        if (tree.contains(valor)) {
+            showSuccess("El valor " + valor + " se encuentra en el árbol.");
+        } else {
+            showError("El valor " + valor + " no se encuentra en el árbol.");
+        }
+    }
+
+    // ---------- RF04: Eliminar ----------
+    @FXML
+    private void onDeleteValue() {
+        BinaryTree tree = getArbolSeleccionado();
+        if (tree == null) return;
+
+        Integer valor = leerValorEntero();
+        if (valor == null) return;
+
+        try {
+            tree.delete(valor);
+            showSuccess("El valor " + valor + " fue eliminado correctamente.");
+            valueField.clear();
+            redrawSelectedTree();
+        } catch (ValueNotFoundException e) {
+            showError(e.getMessage());
+        }
+    }
+
+    // ---------- RF05: Recorridos ----------
+    @FXML
+    private void onPreorder() {
+        BinaryTree tree = getArbolSeleccionado();
+        if (tree == null) return;
+        List<Integer> resultado = tree.preOrder();
+        logMessage("Preorden: " + resultado);
+    }
+
+    @FXML
+    private void onInorder() {
+        BinaryTree tree = getArbolSeleccionado();
+        if (tree == null) return;
+        List<Integer> resultado = tree.inOrder();
+        logMessage("Inorden: " + resultado);
+    }
+
+    @FXML
+    private void onPostorder() {
+        BinaryTree tree = getArbolSeleccionado();
+        if (tree == null) return;
+        List<Integer> resultado = tree.postOrder();
+        logMessage("Postorden: " + resultado);
+    }
+
+    // ----------  Exportar a PDF ----------
     @FXML
     private void onExportPdf() {
         BinaryTree tree = getArbolSeleccionado();
