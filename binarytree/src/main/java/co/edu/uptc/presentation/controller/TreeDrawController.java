@@ -1,27 +1,18 @@
 package co.edu.uptc.presentation.controller;
 
 
-import co.edu.uptc.App;
-import co.edu.uptc.domain.exception.DuplicateValueException;
-import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.domain.model.BinaryTree;
 import co.edu.uptc.domain.model.TreeManager;
 import co.edu.uptc.Export.PdfTreeExporter;
 import co.edu.uptc.presentation.TreeDrawer;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 
 public class TreeDrawController {

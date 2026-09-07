@@ -12,7 +12,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -70,10 +69,6 @@ public class PdfTreeExporter {
         }
     }
 
-    /**
-     * Convierte una WritableImage de JavaFX a BufferedImage (java.awt.image)
-     * leyendo los pixeles directamente, sin usar javafx.embed.swing.SwingFXUtils.
-     */
     private BufferedImage convertirAImagenAwt(WritableImage imagenFX) {
         int ancho = (int) Math.round(imagenFX.getWidth());
         int alto = (int) Math.round(imagenFX.getHeight());
