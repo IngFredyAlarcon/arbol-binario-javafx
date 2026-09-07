@@ -75,8 +75,6 @@ public class TreeDrawController {
     }
     // --- FIN BLOQUE DE PRUEBA ---
         
-        
-  
         refreshTreeComboBox();
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
