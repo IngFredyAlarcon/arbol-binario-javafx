@@ -1,5 +1,5 @@
 package co.edu.uptc.domain.model;
-
+import co.edu.uptc.domain.exception.DuplicateValueException;
 public class BinaryTree {
     private Node root;
     private String name;
