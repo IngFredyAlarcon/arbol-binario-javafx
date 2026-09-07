@@ -11,31 +11,28 @@ public class TreeManager {
         this.trees = new HashMap<>();
     }
 
-    // Crear un nuevo árbol con un nombre específico
+
     public void createTree(String name) throws DuplicateTreeException {
-        if (trees.containsKey(name)) {
+        String key = name.toLowerCase();
+        if (trees.containsKey(key)) {
             throw new DuplicateTreeException("Ya existe un árbol con el nombre: " + name);
         }
-        trees.put(name, new BinaryTree(name));
+        trees.put(key, new BinaryTree(name));
     }
 
-    // Método para eliminar un árbol
     public void deleteTree(String name) {
-        trees.remove(name);
+        trees.remove(name.toLowerCase());
     }
 
-    // Método para obtener el mapa de árboles
     public Map<String, BinaryTree> getTrees() {
         return trees;
     }
 
-    // Método para obtener un árbol por su nombre
     public BinaryTree getTree(String name) {
-        return trees.get(name);
+        return trees.get(name.toLowerCase());
     }
 
-    // Método para verificar si existe un árbol
     public boolean treeExists(String name) {
-        return trees.containsKey(name);
+        return trees.containsKey(name.toLowerCase());
     }
 }
