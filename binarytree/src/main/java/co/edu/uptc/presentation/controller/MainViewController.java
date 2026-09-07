@@ -82,9 +82,35 @@ public class MainViewController {
 
     }
 
+    
     @FXML
     private void onInsert() {
+        
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol antes de insertar.");
+            return;
+        }
 
+        
+        String input = valueField.getText().trim();
+        if (input.isEmpty()) {
+            showError("Ingrese un valor antes de insertar.");
+            return;
+        }
+
+        
+        try {
+            int value = Integer.parseInt(input);
+            BinaryTree tree = treeManager.getTree(selected);
+            tree.insert(value);
+            showSuccess("El valor " + value + " fue insertado correctamente.");
+            valueField.clear();
+        } catch (NumberFormatException e) {
+            showError("Solo se permiten valores enteros.");
+        } catch (DuplicateValueException e) {
+            showError(e.getMessage());
+        }
     }
 
     @FXML
