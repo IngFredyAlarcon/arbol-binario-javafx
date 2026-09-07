@@ -95,12 +95,12 @@ public class MainViewController {
         String arbolSeleccionado = comboTrees.getValue();
         try {
             
-        // 1. Valida si hay un arbol seleccionado o no
+        
         if (arbolSeleccionado == null || arbolSeleccionado.trim().isEmpty()) {
             throw new NoTreeSelectedException();
         }
 
-        // 2. Manda una alerta para confirmar o cancelar la eliminacion del arbol
+       
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar eliminación");
         confirmacion.setHeaderText(null);
@@ -108,7 +108,7 @@ public class MainViewController {
 
         Optional<ButtonType> resultado = confirmacion.showAndWait();
 
-        // 3. Elimina el arbol en el JSON y de forma visual en el comboBox
+        
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             
                 sv.eliminarArbol(arbolSeleccionado);
@@ -130,7 +130,8 @@ public class MainViewController {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error inesperado", "Ocurrió un error no controlado: " + e.getMessage());
             }
     }
-    
+
+
 
     @FXML
     private void onInsert() {

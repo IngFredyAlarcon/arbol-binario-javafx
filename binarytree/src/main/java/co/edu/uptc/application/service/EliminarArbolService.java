@@ -14,7 +14,7 @@ public class EliminarArbolService {
     }
 
     public void eliminarArbol(String nombre) {
-        if (nombre == null || !repository.exists(nombre)) {
+        if (nombre == null || nombre.trim().isEmpty()) {
             throw new NoTreeSelectedException();
         }
 
