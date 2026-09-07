@@ -12,16 +12,10 @@ import java.util.Map;
 
 /**
  * Responsable únicamente de dibujar un BinaryTree dentro de un Pane de JavaFX.
- * No conoce TreeManager, controllers ni persistencia (RNF08).
- *
- * Algoritmo de posicionamiento:
- * - Eje X: se asigna según el recorrido inorden (izquierda-raíz-derecha), lo que
- *   garantiza que el árbol se dibuje sin cruces entre ramas.
- * - Eje Y: se asigna según la profundidad (nivel) del nodo.
  */
 public class TreeDrawer {
 
-    private static final double RADIO_NODO = 18;
+    private static final double RADIO_NODO = 20;
     private static final double ESPACIADO_X = 55;
     private static final double ESPACIADO_Y = 80;
     private static final double MARGEN_X = 40;
@@ -93,7 +87,6 @@ public class TreeDrawer {
 
         Text texto = new Text(String.valueOf(nodo.getValue()));
         texto.getStyleClass().add("node-text");
-        // Centrar el texto aproximadamente dentro del círculo
         texto.setX(pos[0] - (String.valueOf(nodo.getValue()).length() * 4.0));
         texto.setY(pos[1] + 4);
 

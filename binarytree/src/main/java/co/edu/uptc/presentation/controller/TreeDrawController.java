@@ -61,7 +61,7 @@ public class TreeDrawController {
 
     @FXML
     public void initialize() {
-            // --- SOLO PARA PROBAR: quitar después ---
+        /**Prueba de arbol creado */
     treeManager = new TreeManager();
     try {
         treeManager.createTree("prueba");
@@ -72,14 +72,11 @@ public class TreeDrawController {
         }
     } catch (DuplicateTreeException e) {
         e.printStackTrace();
-    }
-    // --- FIN BLOQUE DE PRUEBA ---
-        
+    }        
         refreshTreeComboBox();
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
 
-    // Método para refrescar el ComboBox con los nombres de los árboles
     public void refreshTreeComboBox() {
         comboTrees.getItems().clear();
         if (treeManager != null && treeManager.getTrees() != null) {
@@ -91,18 +88,19 @@ public class TreeDrawController {
         redrawSelectedTree();
     }
 
-    
+    /**Metodo de requerimiento funcional 10 */
     @FXML
     private void onLoadTree() {
-        // TODO: Implementar carga de árbol desde archivo (RF10)
         logMessage("Función de carga en desarrollo...");
     }
 
+    /**Metodo de requerimiento funcional 09 */
     @FXML
     private void onSaveTree() {
-        // TODO: Implementar guardado de árbol (RF09)
+        
         logMessage("Función de guardado en desarrollo...");
     }
+    /**Metodo para de eleminar , parte de otro requerimiento */
 
     @FXML
     private void onDeleteTree() {
@@ -123,6 +121,7 @@ public class TreeDrawController {
             logMessage("Árbol '" + selected + "' eliminado.");
         }
     }
+     /**Metodo para de seleccionar , parte de otro requerimiento */
 
     @FXML
     private void onSelectTree() {
@@ -133,7 +132,7 @@ public class TreeDrawController {
         redrawSelectedTree();
     }
 
-    // ---------- RF02: Insertar ----------
+     /**Metodo para de insertar , parte de otro requerimiento */
     @FXML
     private void onInsert() {
         BinaryTree tree = getArbolSeleccionado();
@@ -152,7 +151,7 @@ public class TreeDrawController {
         }
     }
 
-    // ---------- RF03: Buscar ----------
+     /**Metodo para de buscar , parte de otro requerimiento */
     @FXML
     private void onSearch() {
         BinaryTree tree = getArbolSeleccionado();
@@ -168,7 +167,7 @@ public class TreeDrawController {
         }
     }
 
-    // ---------- RF04: Eliminar ----------
+     /**Metodo para de eleminar , parte de otro requerimiento */
     @FXML
     private void onDeleteValue() {
         BinaryTree tree = getArbolSeleccionado();
@@ -187,7 +186,7 @@ public class TreeDrawController {
         }
     }
 
-    // ---------- RF05: Recorridos ----------
+     /**Metodo para de recorridos , parte de otro requerimiento */
     @FXML
     private void onPreorder() {
         BinaryTree tree = getArbolSeleccionado();
@@ -212,7 +211,7 @@ public class TreeDrawController {
         logMessage("Postorden: " + resultado);
     }
 
-    // ----------  Exportar a PDF ----------
+    
     @FXML
     private void onExportPdf() {
         BinaryTree tree = getArbolSeleccionado();
@@ -245,7 +244,6 @@ public class TreeDrawController {
         }
     }
 
-    // ---------- Métodos auxiliares ----------
 
     private BinaryTree getArbolSeleccionado() {
         String selected = comboTrees.getSelectionModel().getSelectedItem();

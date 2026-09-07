@@ -18,15 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Exporta la representación gráfica del árbol (capturada desde el Pane de JavaFX
- * donde TreeDrawer dibuja el árbol) a un archivo PDF.
- *
- * Vive en infrastructure porque, igual que la persistencia en archivos,
- * es un detalle técnico de "cómo se guarda" y no debe conocerlo el dominio.
- *
- * Nota: la conversión de WritableImage a BufferedImage se hace manualmente,
- * pixel por pixel, para no depender del módulo javafx-swing (SwingFXUtils).
- * BufferedImage es parte de java.awt.image (JDK base), no de Swing.
+ * Exporta la representación gráfica del árbol a un archivo PDF.
  */
 public class PdfTreeExporter {
 
