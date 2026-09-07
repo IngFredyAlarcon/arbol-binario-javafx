@@ -34,7 +34,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Lanza excepción si el nombre enviado a eliminar es nulo")
     public void testEliminarArbolNombreNulo() {
         assertThrows(NoTreeSelectedException.class, () -> {
             service.eliminarArbol(null);
@@ -42,14 +41,13 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Lanza excepción si el árbol no existe en el repositorio")
     public void testEliminarArbolNoExistente() {
         String nombreInexistente = "Arbol InexistenteXYZ";
         assertFalse(repository.exists(nombreInexistente));
 
-        assertThrows(NoTreeSelectedException.class, () -> {
-            service.eliminarArbol(nombreInexistente);
-        });
+        assertThrows(TreeNotFoundException.class, () -> {
+        service.eliminarArbol("Arbol InexistenteXYZ");
+    });
     }
 
     @Test
@@ -66,7 +64,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Obtiene la lista de nombres de árboles guardados")
     public void testObtenerNombresArboles() {
         List<String> nombres = service.obtenerNombresArboles();
         assertNotNull(nombres);
@@ -75,7 +72,6 @@ public class EliminarArbolTest {
 
 
     @Test
-    @DisplayName("Excepción: DuplicateValueException")
     public void testDuplicateValueException() {
         DuplicateValueException ex = assertThrows(DuplicateValueException.class, () -> {
             throw new DuplicateValueException(10);
@@ -84,7 +80,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Excepción: EmptyTreeException")
     public void testEmptyTreeException() {
         EmptyTreeException ex = assertThrows(EmptyTreeException.class, () -> {
             throw new EmptyTreeException("eliminar");
@@ -93,7 +88,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Excepción: InvalidTreeNameException")
     public void testInvalidTreeNameException() {
         InvalidTreeNameException ex = assertThrows(InvalidTreeNameException.class, () -> {
             throw new InvalidTreeNameException("");
@@ -102,7 +96,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Excepción: NoTreeSelectedException")
     public void testNoTreeSelectedException() {
         NoTreeSelectedException ex = assertThrows(NoTreeSelectedException.class, () -> {
             throw new NoTreeSelectedException();
@@ -111,7 +104,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Excepción: TreeNotFoundException")
     public void testTreeNotFoundException() {
         TreeNotFoundException ex = assertThrows(TreeNotFoundException.class, () -> {
             throw new TreeNotFoundException("ArbolPrueba");
@@ -120,7 +112,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Excepción: ValueNotFoundException")
     public void testValueNotFoundException() {
         ValueNotFoundException ex = assertThrows(ValueNotFoundException.class, () -> {
             throw new ValueNotFoundException(99);
@@ -129,7 +120,6 @@ public class EliminarArbolTest {
     }
 
     @Test
-    @DisplayName("Excepción: PersistenceException")
     public void testPersistenceException() {
         IOException causa = new IOException("Error de lectura");
         PersistenceException ex = assertThrows(PersistenceException.class, () -> {
