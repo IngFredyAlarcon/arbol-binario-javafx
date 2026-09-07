@@ -74,11 +74,7 @@ public class MainViewController {
         refreshTreeCombo();
     }
 
-    /**
-     * Carga árboles de ejemplo en el repositorio para poder probar la carga
-     * de árboles (RF-11) mientras no exista la creación/guardado de árboles
-     * desde la interfaz (RF pendientes).
-     */
+    
     private void seedSampleTrees() {
         BinarySearchTree balanced = new BinarySearchTree();
         for (int value : new int[] {50, 30, 70, 20, 40, 60, 80}) {
