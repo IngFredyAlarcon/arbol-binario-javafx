@@ -37,23 +37,38 @@ public class CreateTreeController {
     private void onCreateTree() {
         String treeName = treeNameField.getText().trim();
 
+      
         if (treeName.isEmpty()) {
-            messageLabel.setText("Por favor, ingrese un nombre para el árbol.");
-            messageLabel.setStyle("-fx-text-fill: #c0392b;");
+            showError("Por favor, ingrese un nombre para el árbol.");
+            return;
+        }
+
+     
+        if (treeName.length() > 20) {
+            showError("El nombre no puede tener más de 20 caracteres.");
+            return;
+        }
+
+   
+        if (!treeName.matches("[a-zA-Z0-9]+")) {
+            showError("El nombre no debe contener caracteres especiales ni espacios.");
             return;
         }
 
         try {
             treeManager.createTree(treeName);
-            messageLabel.setText("✅ Árbol '" + treeName + "' creado correctamente.");
+            messageLabel.setText(" Árbol '" + treeName + "' creado correctamente.");
             messageLabel.setStyle("-fx-text-fill: #2e8b57;");
 
+ 
             if (mainController != null) {
                 mainController.refreshTreeComboBox();
             }
 
+
             treeNameField.clear();
 
+  
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);
@@ -67,9 +82,13 @@ public class CreateTreeController {
             }).start();
 
         } catch (DuplicateTreeException e) {
-            messageLabel.setText("❌ " + e.getMessage());
-            messageLabel.setStyle("-fx-text-fill: #c0392b;");
+            showError(e.getMessage());
         }
+    }
+
+    private void showError(String message) {
+        messageLabel.setText(message);
+        messageLabel.setStyle("-fx-text-fill: #c0392b;");
     }
 
     @FXML
