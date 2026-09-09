@@ -183,11 +183,6 @@ public class MainViewController {
         }
     }
 
-    /**
-     * RF-11: cuando hay varios árboles almacenados, permite elegir cuál de
-     * ellos se quiere consultar o modificar mediante una ventana dedicada,
-     * en vez de depender únicamente del combo de la barra superior.
-     */
     @FXML
     private void onOpenTreeSelector() {
         if (treeManager == null || treeManager.getTrees().isEmpty()) {

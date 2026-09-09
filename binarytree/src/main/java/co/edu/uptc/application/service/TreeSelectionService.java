@@ -7,12 +7,6 @@ import co.edu.uptc.domain.model.TreeManager;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * RF-11: cuando hay varios árboles almacenados, coordina cuál de ellos
- * está activo para que el usuario lo consulte o modifique. Se apoya en
- * {@link TreeManager}, que es quien conserva los árboles reales de la
- * aplicación (creados o cargados desde persistencia).
- */
 public class TreeSelectionService {
 
     private final TreeManager treeManager;
