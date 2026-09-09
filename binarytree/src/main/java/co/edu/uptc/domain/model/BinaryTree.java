@@ -26,6 +26,10 @@ public class BinaryTree {
         return root;
     }
 
+    public void setRoot(Node root) {
+    this.root = root;
+    }
+
     public List<Integer> getPreOrder() {
         List<Integer> result = new ArrayList<>();
         preOrder(root, result);
