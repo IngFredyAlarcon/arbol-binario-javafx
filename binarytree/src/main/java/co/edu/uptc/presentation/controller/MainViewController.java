@@ -1,20 +1,20 @@
 package co.edu.uptc.presentation.controller;
 
-import co.edu.uptc.domain.model.BinarySearchTree;
-import co.edu.uptc.domain.repository.BinaryTreeRepository;
-import co.edu.uptc.infraestructure.persistence.InMemoryBinaryTreeRepository;
-
-import javafx.collections.FXCollections;
+import co.edu.uptc.App;
+import co.edu.uptc.domain.exception.DuplicateTreeException;
+import co.edu.uptc.domain.model.BinaryTree;
+import co.edu.uptc.domain.model.TreeManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -22,101 +22,94 @@ import java.io.IOException;
 
 public class MainViewController {
 
-    private final BinaryTreeRepository repository = new InMemoryBinaryTreeRepository();
-
-    private BinarySearchTree currentTree;
-    private String currentTreeName;
-
-    // ===== Top bar =====
     @FXML
     private ComboBox<String> comboTrees;
+
     @FXML
     private Button btnNewTree;
+
     @FXML
     private Button btnLoadTree;
+
     @FXML
     private Button btnSaveTree;
+
     @FXML
     private Button btnDeleteTree;
-    // ===== Left panel (operations) =====
+
     @FXML
     private TextField valueField;
+
     @FXML
     private Button btnInsert;
+
     @FXML
     private Button btnSearch;
+
     @FXML
     private Button btnDeleteValue;
+
     @FXML
     private Button btnPreorder;
+
     @FXML
     private Button btnInorder;
+
     @FXML
     private Button btnPostorder;
-    @FXML
-    private VBox extraOperationsPanel;
 
-    // ===== Center =====
     @FXML
     private Pane treeDrawingPanel;
 
-    // ===== Right =====
-    @FXML
-    private VBox infoPanel;
-
-    // ===== Bottom =====
     @FXML
     private TextArea messagesArea;
 
+    private TreeManager treeManager;
+
     @FXML
     public void initialize() {
-        seedSampleTrees();
-        refreshTreeCombo();
+        treeManager = new TreeManager();
+        refreshTreeComboBox();
+        logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
 
-    
-    private void seedSampleTrees() {
-        BinarySearchTree balanced = new BinarySearchTree();
-        for (int value : new int[] {50, 30, 70, 20, 40, 60, 80}) {
-            balanced.insert(value);
+
+    public void refreshTreeComboBox() {
+        comboTrees.getItems().clear();
+        if (treeManager != null && treeManager.getTrees() != null) {
+            // Se agregan los objetos BinaryTree directamente o sus nombres guardados
+            for (BinaryTree tree : treeManager.getTrees().values()) {
+                comboTrees.getItems().add(tree.getName());
+            }
         }
-        repository.save("Árbol balanceado", balanced);
-
-        BinarySearchTree ascending = new BinarySearchTree();
-        for (int value : new int[] {10, 20, 30, 40, 50}) {
-            ascending.insert(value);
+  
+        if (!comboTrees.getItems().isEmpty()) {
+            comboTrees.getSelectionModel().selectFirst();
         }
-        repository.save("Árbol ascendente", ascending);
-
-        repository.save("Árbol vacío", new BinarySearchTree());
     }
-
-    private void refreshTreeCombo() {
-        comboTrees.setItems(FXCollections.observableArrayList(repository.findAll()));
-    }
-
-    private void logMessage(String message) {
-        messagesArea.appendText(message + System.lineSeparator());
-    }
-
-    // ===== Tree management (CRUD) =====
-
-    @FXML
-    private void onSelectTree() {
-        String name = comboTrees.getValue();
-
-        if (name == null) {
-            return;
-        }
-
-        currentTreeName = name;
-        currentTree = repository.findByName(name);
-        logMessage("Árbol activo: " + name + ".");
-    }
-
     @FXML
     private void onCreateTree() {
+        try {
 
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/CreateTreeView.fxml"));
+            Parent root = loader.load();
+
+       
+            CreateTreeController controller = loader.getController();
+            controller.setTreeManager(treeManager);
+            controller.setMainController(this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Crear nuevo árbol");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana principal
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Error al abrir la ventana de creación: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -151,42 +144,85 @@ public class MainViewController {
 
     @FXML
     private void onSaveTree() {
-
+        
+        logMessage("Función de guardado en desarrollo...");
     }
 
     @FXML
     private void onDeleteTree() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol para eliminar.");
+            return;
+        }
 
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar eliminación");
+        alert.setHeaderText("¿Estás seguro de eliminar el árbol '" + selected + "'?");
+        alert.setContentText("Esta acción no se puede deshacer.");
+
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            treeManager.deleteTree(selected);
+            refreshTreeComboBox();
+            logMessage("Árbol '" + selected + "' eliminado.");
+        }
+    }
+
+    @FXML
+    private void onSelectTree() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            logMessage("Árbol seleccionado: " + selected);
+            
+        }
     }
 
     @FXML
     private void onInsert() {
-
+       
+        logMessage("Función de inserción en desarrollo...");
     }
 
     @FXML
     private void onSearch() {
-
+        
+        logMessage("Función de búsqueda en desarrollo...");
     }
 
     @FXML
     private void onDeleteValue() {
-
+        
+        logMessage("Función de eliminación de valor en desarrollo...");
     }
-
-    // ===== Traversals =====
 
     @FXML
     private void onPreorder() {
+        
+        logMessage("Recorrido preorden en desarrollo...");
     }
 
     @FXML
     private void onInorder() {
-
+       
+        logMessage("Recorrido inorden en desarrollo...");
     }
 
     @FXML
     private void onPostorder() {
+        
+        logMessage("Recorrido postorden en desarrollo...");
+    }
 
+  
+    private void logMessage(String message) {
+        messagesArea.appendText(message + "\n");
+    }
+
+    private void showError(String message) {
+        messagesArea.appendText( message + "\n");
+    }
+
+    private void showSuccess(String message) {
+        messagesArea.appendText( message + "\n");
     }
 }
