@@ -11,7 +11,7 @@ public class TreeManager {
     private Map<String, BinaryTree> trees;
 
     public TreeManager(BinaryTreeRepository repository) {
-        this.repository=repository;
+        this.repository = repository;
         this.trees = new HashMap<>();
     }
 
@@ -42,9 +42,24 @@ public class TreeManager {
     public boolean treeExists(String name) {
         return trees.containsKey(name);
     }
+
     //Método para guardar el árbol
-    public void saveTree(String name, BinaryTree tree){
+    public void saveTree(String name, BinaryTree tree) {
         trees.put(name, tree);
         repository.saveList(trees);
+    }
+
+    /**
+     * Método encargado de cargar en memoria los árboles previamente
+     * guardados en el repositorio (archivo JSON), reemplazando el
+     * contenido actual del mapa en memoria por lo que exista persistido.
+     * 
+     */
+    public void loadTrees() {
+        Map<String, BinaryTree> loaded = repository.loadList();
+        trees.clear();
+        if (loaded != null) {
+            trees.putAll(loaded);
+        }
     }
 }

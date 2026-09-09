@@ -1,34 +1,38 @@
 package co.edu.uptc.infraestructure.persistence;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import co.edu.uptc.domain.model.BinaryTree;
 
 public class JsonRepository implements BinaryTreeRepository {
     private String pathname;
     private Gson gson;
-    
+
     public JsonRepository(String pathname) {
         String rutaDeEjecucion = System.getProperty("user.dir");
-        
+
         File carpetaData = new File(rutaDeEjecucion, "data");
-        
+
         // Si la carpeta "data" no existe junto al programa, la crea
         if (!carpetaData.exists()) {
-            carpetaData.mkdirs(); 
+            carpetaData.mkdirs();
         }
-        
+
         // Une la carpeta "data" con el nombre del archivo
         File archivoFinal = new File(carpetaData, pathname);
-        
+
         // Guardamos la ruta completa
         this.pathname = archivoFinal.getAbsolutePath();
-        
+
         this.gson = new GsonBuilder()
                         .serializeNulls()
                         .setPrettyPrinting()
@@ -41,9 +45,36 @@ public class JsonRepository implements BinaryTreeRepository {
 
         try (FileWriter writer = new FileWriter(pathname)) {
             gson.toJson(trees, writer);
-            System.out.println("Archivo guardado con éxito en: " + pathname); 
+            System.out.println("Archivo guardado con éxito en: " + pathname);
         } catch (Exception e) {
             System.err.println("Error al escribir: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Método que se encarga de leer el archivo JSON y reconstruir el mapa
+     * de árboles binarios almacenado en él.
+     *
+     * @return el mapa de árboles (nombre -> árbol) leído del archivo JSON,
+     *         o un mapa vacío si el archivo no existe o falla la lectura.
+     */
+    @Override
+    public Map<String, BinaryTree> loadList() {
+        File file = new File(pathname);
+
+        if (!file.exists()) {
+            return new HashMap<>();
+        }
+
+        try (FileReader reader = new FileReader(pathname)) {
+            // TypeToken es necesario porque Gson no puede inferir por sí solo
+            // el tipo genérico exacto de un Map<String, BinaryTree>.
+            Type mapType = new TypeToken<Map<String, BinaryTree>>() {}.getType();
+            Map<String, BinaryTree> trees = gson.fromJson(reader, mapType);
+            return trees != null ? trees : new HashMap<>();
+        } catch (Exception e) {
+            System.err.println("Error al leer el archivo json " + pathname + " :" + e.getMessage());
+            return new HashMap<>();
         }
     }
 }

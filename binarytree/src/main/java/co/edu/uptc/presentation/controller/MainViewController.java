@@ -107,23 +107,34 @@ public class MainViewController {
         }
     }
 
+    /**
+     * Método enlazado al botón "Cargar árbol" (btnLoadTree) del fxml.
+     * 
+     */
     @FXML
     private void onLoadTree() {
-        // TODO: Implementar carga de árbol desde archivo
-        logMessage("Función de carga en desarrollo...");
+        treeManager.loadTrees();
+        refreshTreeComboBox();
+
+        if (treeManager.getTrees().isEmpty()) {
+            logMessage("No hay árboles guardados en el archivo JSON.");
+        } else {
+            logMessage("Se cargaron " + treeManager.getTrees().size() + " árbol(es) desde el archivo JSON.");
+        }
     }
+
     @FXML
     private void onSaveTree() {
-    String selectedTreeName = comboTrees.getValue();
-    BinaryTree currentTree = treeManager.getTree(selectedTreeName);
+        String selectedTreeName = comboTrees.getValue();
+        BinaryTree currentTree = treeManager.getTree(selectedTreeName);
 
-    if (currentTree != null) {
-        //Se confirman los cambios en memoria
-        treeManager.saveTree(selectedTreeName, currentTree);
-        
-        logMessage("Cambios del árbol '" + selectedTreeName + "' guardados.");
+        if (currentTree != null) {
+            //Se confirman los cambios en memoria
+            treeManager.saveTree(selectedTreeName, currentTree);
+
+            logMessage("Cambios del árbol '" + selectedTreeName + "' guardados.");
+        }
     }
-}
 
     @FXML
     private void onDeleteTree() {
