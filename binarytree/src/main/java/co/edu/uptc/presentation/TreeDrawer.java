@@ -84,7 +84,7 @@ public class TreeDrawer {
 
         Circle circulo = new Circle(pos[0], pos[1], RADIO_NODO);
         circulo.getStyleClass().add("tree-node");
-
+        circulo.setUserData(nodo.getValue());
         Text texto = new Text(String.valueOf(nodo.getValue()));
         texto.getStyleClass().add("node-text");
         texto.setX(pos[0] - (String.valueOf(nodo.getValue()).length() * 4.0));
@@ -105,5 +105,27 @@ public class TreeDrawer {
         }
         pane.setPrefWidth(maxX + MARGEN_X + RADIO_NODO);
         pane.setPrefHeight(maxY + MARGEN_Y + RADIO_NODO);
+    }
+
+    public void highlightNode(Pane pane, int targetValue) {
+        resetNodeStyles(pane); 
+
+        for (javafx.scene.Node element : pane.getChildren()) {
+            if (element instanceof Circle) {
+                Circle circulo = (Circle) element;
+                if (circulo.getUserData() != null && (int) circulo.getUserData() == targetValue) {
+                    circulo.setStyle("-fx-fill: #f1c40f; -fx-stroke: #d35400; -fx-stroke-width: 3.5;");
+                    break;
+                }
+            }
+        }
+    }
+    public void resetNodeStyles(Pane pane) {
+        for (javafx.scene.Node element : pane.getChildren()) {
+            if (element instanceof Circle) {
+                Circle circulo = (Circle) element;
+                circulo.setStyle(""); // Elimina los estilos inline
+            }
+        }
     }
 }

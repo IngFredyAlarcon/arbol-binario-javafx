@@ -3,9 +3,10 @@ module co.edu.uptc {
     requires javafx.fxml;
     requires org.apache.pdfbox;
     requires java.desktop;
-
+    requires com.google.gson;
+    
     opens co.edu.uptc to javafx.fxml;
     opens co.edu.uptc.presentation.controller to javafx.fxml;
-
+    opens co.edu.uptc.domain.model to com.google.gson;
     exports co.edu.uptc;
 }
