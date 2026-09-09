@@ -45,6 +45,9 @@ public class MainViewController {
     private Button btnDeleteTree;
 
     @FXML
+    private Button btnSelectTree;
+
+    @FXML
     private TextField valueField;
 
     @FXML
@@ -84,8 +87,6 @@ public class MainViewController {
     }
 
 
-
-    
     public void refreshTreeComboBox() {
         comboTrees.getItems().clear();
         if (treeManager != null && treeManager.getTrees() != null) {
@@ -110,7 +111,7 @@ public class MainViewController {
             Stage stage = new Stage();
             stage.setTitle("Crear nuevo árbol");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL); 
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setResizable(false);
             stage.showAndWait();
 
@@ -142,7 +143,7 @@ public class MainViewController {
     @FXML
     private void onSaveTree() {
         try {
-            co.edu.uptc.infraestructure.persistence.BinaryTreeRepository repository = 
+            co.edu.uptc.infraestructure.persistence.BinaryTreeRepository repository =
                 new co.edu.uptc.infraestructure.persistence.JsonRepository("arboles.json");
 
             repository.saveList(treeManager.getTrees());
@@ -181,7 +182,42 @@ public class MainViewController {
             redrawSelectedTree();
         }
     }
-    @FXML 
+
+    @FXML
+    private void onOpenTreeSelector() {
+        if (treeManager == null || treeManager.getTrees().isEmpty()) {
+            showError("No hay árboles disponibles para seleccionar. Crea o carga uno primero.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/tree-selection.fxml"));
+            Parent root = loader.load();
+
+            TreeSelectionController controller = loader.getController();
+            controller.setTreeManager(treeManager);
+            controller.setOnTreeSelected(this::handleTreeSelected);
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Seleccionar árbol");
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.setResizable(false);
+            controller.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            showError("No fue posible abrir el selector de árboles: " + e.getMessage());
+        }
+    }
+
+    private void handleTreeSelected(String name, BinaryTree tree) {
+        comboTrees.getSelectionModel().select(name);
+        redrawSelectedTree();
+        logMessage("Árbol '" + name + "' seleccionado correctamente.");
+    }
+
+    @FXML
     private void onInsert() {
         String selected = comboTrees.getSelectionModel().getSelectedItem();
         if (selected == null) {
@@ -245,19 +281,19 @@ public class MainViewController {
         } catch (Exception e) {
             messagesArea.setText("Error inesperado: " + e.getMessage());
         }
-        
+
         logMessage("Función de búsqueda en desarrollo...");
     }
 
     @FXML
     private void onDeleteValue() {
-        
+
         logMessage("Función de eliminación de valor en desarrollo...");
     }
 
     @FXML
     private void onPreorder() {
-        
+
         logMessage("Recorrido preorden en desarrollo...");
     }
 
@@ -268,11 +304,11 @@ public class MainViewController {
 
     @FXML
     private void onPostorder() {
-        
+
         logMessage("Recorrido postorden en desarrollo...");
     }
 
-  
+
     private void logMessage(String message) {
         messagesArea.appendText(message + "\n");
     }

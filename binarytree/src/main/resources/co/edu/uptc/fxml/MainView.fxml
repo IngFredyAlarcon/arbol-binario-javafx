@@ -22,7 +22,7 @@
     <top>
         <HBox fx:id="topBar" spacing="10.0" styleClass="top-bar">
             <Label text="Árbol activo:" />
-            <ComboBox fx:id="comboTrees" prefWidth="180.0" onAction="#onSelectTree" />
+            <ComboBox fx:id="comboTrees" prefWidth="180.0" promptText="Sin árbol cargado" onAction="#onSelectTree" />
 
             <Button fx:id="btnNewTree" text="Crear árbol" onAction="#onCreateTree" styleClass="button-primary" />
             <Button fx:id="btnLoadTree" text="Cargar árbol" onAction="#onLoadTree" />
@@ -59,7 +59,9 @@
 
             <!-- Extension point: any future operation can be added here -->
             <Label text="Otras operaciones" styleClass="section-title" />
-            <VBox fx:id="extraOperationsPanel" spacing="8.0" />
+            <VBox fx:id="extraOperationsPanel" spacing="8.0">
+                <Button fx:id="btnSelectTree" text="Seleccionar árbol" onAction="#onOpenTreeSelector" maxWidth="Infinity" />
+            </VBox>
         </VBox>
     </left>
 
