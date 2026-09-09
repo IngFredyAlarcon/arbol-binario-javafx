@@ -1,8 +1,6 @@
 package co.edu.uptc.presentation.controller;
-
 import co.edu.uptc.App;
 import co.edu.uptc.domain.exception.DuplicateTreeException;
-import co.edu.uptc.domain.exception.DuplicateValueException;
 import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.domain.model.BinaryTree;
 import co.edu.uptc.domain.model.Node;
@@ -78,12 +76,10 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
-        treeManager = new TreeManager();
+        treeManager = new TreeManager(new JsonRepository("BinaryTree.json"));
         refreshTreeComboBox();
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
-
-
 
     
     public void refreshTreeComboBox() {
@@ -100,13 +96,14 @@ public class MainViewController {
     @FXML
     private void onCreateTree() {
         try {
-
+            // Cargar la vista de creación de árbol
             FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/CreateTreeView.fxml"));
             Parent root = loader.load();
             CreateTreeController controller = loader.getController();
             controller.setTreeManager(treeManager);
             controller.setMainController(this);
 
+            // Crear una nueva ventana (Stage)
             Stage stage = new Stage();
             stage.setTitle("Crear nuevo árbol");
             stage.setScene(new Scene(root));
@@ -138,20 +135,18 @@ public class MainViewController {
             showError("Error al cargar la persistencia: " + e.getMessage());
         }
     }
-
     @FXML
     private void onSaveTree() {
-        try {
-            co.edu.uptc.infraestructure.persistence.BinaryTreeRepository repository = 
-                new co.edu.uptc.infraestructure.persistence.JsonRepository("arboles.json");
+    String selectedTreeName = comboTrees.getValue();
+    BinaryTree currentTree = treeManager.getTree(selectedTreeName);
 
-            repository.saveList(treeManager.getTrees());
-            showSuccess("¡Todos los árboles se guardaron en 'data/arboles.json'!");
-
-        } catch (Exception e) {
-            showError("Error al guardar: " + e.getMessage());
-        }
+    if (currentTree != null) {
+        //Se confirman los cambios en memoria
+        treeManager.saveTree(selectedTreeName, currentTree);
+        
+        logMessage("Cambios del árbol '" + selectedTreeName + "' guardados.");
     }
+}
 
     @FXML
     private void onDeleteTree() {
@@ -251,13 +246,11 @@ public class MainViewController {
 
     @FXML
     private void onDeleteValue() {
-        
         logMessage("Función de eliminación de valor en desarrollo...");
     }
 
     @FXML
     private void onPreorder() {
-        
         logMessage("Recorrido preorden en desarrollo...");
     }
 
@@ -268,20 +261,20 @@ public class MainViewController {
 
     @FXML
     private void onPostorder() {
-        
         logMessage("Recorrido postorden en desarrollo...");
     }
 
-  
     private void logMessage(String message) {
         messagesArea.appendText(message + "\n");
     }
 
     private void showError(String message) {
-        messagesArea.appendText( message + "\n");
+        messagesArea.appendText("❌ " + message + "\n");
     }
 
     private void showSuccess(String message) {
+        messagesArea.appendText("✅ " + message + "\n");
         messagesArea.appendText( message + "\n");
     }
+
 }

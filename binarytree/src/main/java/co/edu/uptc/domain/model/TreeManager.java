@@ -1,22 +1,36 @@
 package co.edu.uptc.domain.model;
 
+import co.edu.uptc.infraestructure.persistence.BinaryTreeRepository;
 import co.edu.uptc.domain.exception.DuplicateTreeException;
-import co.edu.uptc.domain.exception.ValueNotFoundException;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class TreeManager {
+    private BinaryTreeRepository repository;
     private Map<String, BinaryTree> trees;
 
-    public TreeManager() {
+    public TreeManager(BinaryTreeRepository repository) {
+        this.repository=repository;
         this.trees = new HashMap<>();
     }
+
+    // Crear un nuevo árbol con un nombre específico
     public void createTree(String name) throws DuplicateTreeException {
         if (trees.containsKey(name)) {
             throw new DuplicateTreeException("Ya existe un árbol con el nombre: " + name);
         }
-        trees.put(name, new BinaryTree(name));
+        saveTree(name, new BinaryTree(name));
+    }
+
+    // Método para obtener el mapa de árboles
+    public Map<String, BinaryTree> getTrees() {
+        return trees;
+    }
+
+    //Método para guardar el árbol
+    public void saveTree(String name, BinaryTree tree){
+        trees.put(name, tree);
+        repository.saveList(trees);
     }
 
     public void insertValue(String name,int value) {
@@ -44,9 +58,7 @@ public class TreeManager {
     public void deleteTree(String name) {
         trees.remove(name);
     }
-    public Map<String, BinaryTree> getTrees() {
-        return trees;
-    }
+
     public BinaryTree getTree(String name) {
         return trees.get(name);
     }

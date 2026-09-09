@@ -27,6 +27,9 @@ public class BinaryTree {
     public Node getRoot() {
         return root;
     }
+    public void setRoot(Node root){
+        this.root=root;
+    }
 
     public boolean isEmpty() {
         return root == null;
