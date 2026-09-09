@@ -73,11 +73,9 @@ public class MainViewController {
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
 
-
     public void refreshTreeComboBox() {
         comboTrees.getItems().clear();
         if (treeManager != null && treeManager.getTrees() != null) {
-            // Se agregan los objetos BinaryTree directamente o sus nombres guardados
             for (BinaryTree tree : treeManager.getTrees().values()) {
                 comboTrees.getItems().add(tree.getName());
             }
@@ -87,14 +85,13 @@ public class MainViewController {
             comboTrees.getSelectionModel().selectFirst();
         }
     }
+
     @FXML
     private void onCreateTree() {
         try {
-
             FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/CreateTreeView.fxml"));
             Parent root = loader.load();
 
-       
             CreateTreeController controller = loader.getController();
             controller.setTreeManager(treeManager);
             controller.setMainController(this);
@@ -102,7 +99,7 @@ public class MainViewController {
             Stage stage = new Stage();
             stage.setTitle("Crear nuevo árbol");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana principal
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setResizable(false);
             stage.showAndWait();
 
@@ -114,13 +111,11 @@ public class MainViewController {
 
     @FXML
     private void onLoadTree() {
-        
         logMessage("Función de carga en desarrollo...");
     }
 
     @FXML
     private void onSaveTree() {
-        
         logMessage("Función de guardado en desarrollo...");
     }
 
@@ -149,56 +144,73 @@ public class MainViewController {
         String selected = comboTrees.getSelectionModel().getSelectedItem();
         if (selected != null) {
             logMessage("Árbol seleccionado: " + selected);
-            
         }
     }
 
     @FXML
     private void onInsert() {
-       
         logMessage("Función de inserción en desarrollo...");
     }
 
     @FXML
     private void onSearch() {
-        
         logMessage("Función de búsqueda en desarrollo...");
     }
 
     @FXML
     private void onDeleteValue() {
-        
         logMessage("Función de eliminación de valor en desarrollo...");
     }
 
     @FXML
     private void onPreorder() {
-        
-        logMessage("Recorrido preorden en desarrollo...");
+        BinaryTree selectedTree = getSelectedTree();
+        if (selectedTree == null) return;
+
+        logMessage("Preorden: " + formatTraversal(selectedTree.getPreOrder()));
     }
 
     @FXML
     private void onInorder() {
-       
-        logMessage("Recorrido inorden en desarrollo...");
+        BinaryTree selectedTree = getSelectedTree();
+        if (selectedTree == null) return;
+
+        logMessage("Inorden: " + formatTraversal(selectedTree.getInOrder()));
     }
 
     @FXML
     private void onPostorder() {
-        
-        logMessage("Recorrido postorden en desarrollo...");
+        BinaryTree selectedTree = getSelectedTree();
+        if (selectedTree == null) return;
+
+        logMessage("Postorden: " + formatTraversal(selectedTree.getPostOrder()));
     }
 
-  
+    private BinaryTree getSelectedTree() {
+        String selectedName = comboTrees.getSelectionModel().getSelectedItem();
+        if (selectedName == null) {
+            showError("No hay ningún árbol seleccionado.");
+            return null;
+        }
+        return treeManager.getTree(selectedName);
+    }
+
+    private String formatTraversal(java.util.List list) {
+        if (list == null || list.isEmpty()) {
+            return "El árbol está vacío.";
+        }
+        return String.join(" -> ", list.stream().map(Object::toString).toList());
+    }
+
     private void logMessage(String message) {
         messagesArea.appendText(message + "\n");
     }
 
     private void showError(String message) {
-        messagesArea.appendText( message + "\n");
+        messagesArea.appendText(message + "\n");
     }
 
     private void showSuccess(String message) {
-        messagesArea.appendText( message + "\n");
+        messagesArea.appendText(message + "\n");
     }
 }
