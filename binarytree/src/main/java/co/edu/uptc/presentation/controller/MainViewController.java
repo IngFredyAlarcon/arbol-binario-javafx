@@ -1,5 +1,4 @@
 package co.edu.uptc.presentation.controller;
-
 import co.edu.uptc.App;
 import co.edu.uptc.domain.exception.DuplicateTreeException;
 import co.edu.uptc.domain.model.BinaryTree;
@@ -9,7 +8,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -64,7 +68,7 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
-        treeManager = new TreeManager(new JsonRepository("TreeRepository.json"));
+        treeManager = new TreeManager(new JsonRepository("BinaryTree.json"));
         refreshTreeComboBox();
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
@@ -80,7 +84,6 @@ public class MainViewController {
             comboTrees.getSelectionModel().selectFirst();
         }
     }
-
     @FXML
     private void onCreateTree() {
         try {
@@ -109,7 +112,6 @@ public class MainViewController {
 
     @FXML
     private void onLoadTree() {
-        // TODO: Implementar carga de árbol desde archivo
         logMessage("Función de carga en desarrollo...");
     }
     @FXML
@@ -150,47 +152,39 @@ public class MainViewController {
         String selected = comboTrees.getSelectionModel().getSelectedItem();
         if (selected != null) {
             logMessage("Árbol seleccionado: " + selected);
-            // Aquí podrías cargar el árbol seleccionado para mostrarlo
         }
     }
 
     @FXML
     private void onInsert() {
-        // TODO: Implementar inserción
         logMessage("Función de inserción en desarrollo...");
     }
 
     @FXML
     private void onSearch() {
-        // TODO: Implementar búsqueda
         logMessage("Función de búsqueda en desarrollo...");
     }
 
     @FXML
     private void onDeleteValue() {
-        // TODO: Implementar eliminación de valor
         logMessage("Función de eliminación de valor en desarrollo...");
     }
 
     @FXML
     private void onPreorder() {
-        // TODO: Implementar recorrido preorden
         logMessage("Recorrido preorden en desarrollo...");
     }
 
     @FXML
     private void onInorder() {
-        // TODO: Implementar recorrido inorden
         logMessage("Recorrido inorden en desarrollo...");
     }
 
     @FXML
     private void onPostorder() {
-        // TODO: Implementar recorrido postorden
         logMessage("Recorrido postorden en desarrollo...");
     }
 
-    // Métodos auxiliares
     private void logMessage(String message) {
         messagesArea.appendText(message + "\n");
     }
@@ -201,5 +195,7 @@ public class MainViewController {
 
     private void showSuccess(String message) {
         messagesArea.appendText("✅ " + message + "\n");
+        messagesArea.appendText( message + "\n");
     }
+
 }

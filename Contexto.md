@@ -89,9 +89,9 @@ El sistema deberá permitir consultar información del árbol, como:
 - Valor máximo.
 - Si el árbol está vacío.
 
-### RF08. Limpiar el árbol
+### RF08. Eliminar el árbol
 
-El usuario podrá eliminar todos los elementos del árbol actual, dejando la estructura vacía.
+El usuario podrá eliminar todos los elementos del árbol actual, incluyendo su nombre dejando la estructura vacía y eliminandola del archivo de persistencia.
 
 La aplicación deberá solicitar confirmación antes de realizar esta operación.
 
@@ -129,6 +129,14 @@ Por ejemplo:
 o
 
 > "El valor 30 no se encuentra en el árbol."
+
+### RF14. Pruebas Automatizadas TestFX
+
+Realizar pruebas automatizadas para las vistas creadas con javafx
+
+### RF15. Crear pipeline o workflow para la ejecución de pruebas unitarias en cualquier rama.
+
+Debe crear un workflow para ejecutar las pruebas unitarias en cualquier rama del proyecto, de manera que se pueda verificar la integridad del código antes de realizar un merge a la rama principal.
 
 ---
 
@@ -245,6 +253,10 @@ Como mínimo, deberán existir pruebas para:
 - Recorridos.
 - Cálculo de altura.
 - Árbol vacío.
+
+### RNF12. Exportar a PDF
+
+Debe existir la opción de exportar un aárbol y sus estdísticas en PDF
 
 ---
 

@@ -1,8 +1,7 @@
 package co.edu.uptc.domain.model;
 
-import co.edu.uptc.domain.exception.DuplicateTreeException;
 import co.edu.uptc.infraestructure.persistence.BinaryTreeRepository;
-
+import co.edu.uptc.domain.exception.DuplicateTreeException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,18 +32,17 @@ public class TreeManager {
         return trees;
     }
 
-    // Método para obtener un árbol por su nombre
-    public BinaryTree getTree(String name) {
-        return trees.get(name);
-    }
-
-    // Método para verificar si existe un árbol
-    public boolean treeExists(String name) {
-        return trees.containsKey(name);
-    }
     //Método para guardar el árbol
     public void saveTree(String name, BinaryTree tree){
         trees.put(name, tree);
         repository.saveList(trees);
+    }
+
+    public BinaryTree getTree(String name) {
+        return trees.get(name.toLowerCase());
+    }
+
+    public boolean treeExists(String name) {
+        return trees.containsKey(name.toLowerCase());
     }
 }

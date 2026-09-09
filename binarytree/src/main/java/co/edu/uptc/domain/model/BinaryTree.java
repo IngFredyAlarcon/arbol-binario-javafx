@@ -7,6 +7,7 @@ public class BinaryTree {
     public BinaryTree() {
     }
 
+
     public BinaryTree(String name) {
         this.name = name;
         root = null;
