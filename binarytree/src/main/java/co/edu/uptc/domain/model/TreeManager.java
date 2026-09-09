@@ -53,4 +53,10 @@ public class TreeManager {
     public boolean treeExists(String name) {
         return trees.containsKey(name);
     }
+
+    public void setTrees(Map<String, BinaryTree> loadedTrees) {
+        if (loadedTrees != null) {
+            this.trees = loadedTrees;
+        }
+    }
 }

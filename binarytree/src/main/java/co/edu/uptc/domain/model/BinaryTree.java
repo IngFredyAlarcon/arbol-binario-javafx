@@ -3,13 +3,17 @@ package co.edu.uptc.domain.model;
 import co.edu.uptc.domain.exception.DuplicateValueException;
 import co.edu.uptc.domain.exception.ValueNotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BinaryTree {
+
     private Node root;
     private String name;
 
     public BinaryTree(String name) {
         this.name = name;
-        root = null;
+        this.root = null;
     }
 
     public String getName() {
@@ -20,6 +24,14 @@ public class BinaryTree {
         this.name = name;
     }
 
+    public Node getRoot() {
+        return root;
+    }
+
+    public boolean isEmpty() {
+        return root == null;
+    }
+
     public void insert(int value) {
         root = insertRecursive(root, value);
     }
@@ -28,7 +40,6 @@ public class BinaryTree {
         if (current == null) {
             return new Node(value);
         }
-        
         if (value < current.getValue()) {
             current.setLeft(insertRecursive(current.getLeft(), value));
         } else if (value > current.getValue()) {
@@ -36,11 +47,8 @@ public class BinaryTree {
         } else {
             throw new DuplicateValueException(value);
         }
-        
         return current;
     }
-
-
     /**
      * Inicia la búsqueda de un nodo específico en el árbol binario.
      * Es el método público que interactúa con las capas superiores.
@@ -74,7 +82,4 @@ public class BinaryTree {
         return searchNodeRecursive(current.getRight(), value);
     }
 
-    public Node getRoot() {
-        return root;
-    }
 }
