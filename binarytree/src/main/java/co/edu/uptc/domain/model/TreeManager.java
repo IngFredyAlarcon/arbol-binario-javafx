@@ -26,6 +26,15 @@ public class TreeManager {
         trees.get(name).insert(value);;
     }
 
+    /**
+     * Coordina la operación de búsqueda validando primero el estado del sistema.
+     * Delega la responsabilidad de la búsqueda matemática a la capa de dominio.
+     * 
+     * @param value El valor numérico ingresado por el usuario.
+     * @return El nodo encontrado devuelto por el árbol.
+     * @throws IllegalStateException Si se intenta buscar sin haber creado un árbol primero.
+     * @throws ValueNotFoundException Si el número no pertenece al árbol.
+     */
     public Node searchNode(String name,int value) {
         if (name == null || trees.get(name).getRoot() == null) {
             throw new IllegalStateException("No hay un árbol activo para buscar.");

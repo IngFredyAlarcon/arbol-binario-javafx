@@ -49,10 +49,26 @@ public class BinaryTree {
         }
         return current;
     }
+    /**
+     * Inicia la búsqueda de un nodo específico en el árbol binario.
+     * Es el método público que interactúa con las capas superiores.
+     * 
+     * @param value El valor entero que se desea buscar.
+     * @return El objeto Node que contiene el valor buscado.
+     * @throws ValueNotFoundException Si el valor no se encuentra en el árbol.
+     */
     public Node searchNode(int value) {
         return searchNodeRecursive(root, value);
     }
     
+    /**
+     * Método auxiliar recursivo que navega por las ramas del árbol comparando valores.
+     * 
+     * @param current El nodo actual que se está evaluando (comienza en la raíz).
+     * @param value El valor entero a buscar.
+     * @return El objeto Node que coincide con el valor.
+     * @throws ValueNotFoundException Si se llega a una rama nula, indicando que el número no existe.
+     */
     private Node searchNodeRecursive(Node current, int value) {
         if (current == null) {
             throw new ValueNotFoundException(value);
