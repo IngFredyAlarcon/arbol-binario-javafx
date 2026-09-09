@@ -59,7 +59,9 @@
 
             <!-- Extension point: any future operation can be added here -->
             <Label text="Otras operaciones" styleClass="section-title" />
-            <VBox fx:id="extraOperationsPanel" spacing="8.0" />
+            <VBox fx:id="extraOperationsPanel" spacing="8.0">
+                <Button fx:id="btnSelectTree" text="Seleccionar árbol" onAction="#onOpenTreeSelector" maxWidth="Infinity" />
+            </VBox>
         </VBox>
     </left>
 

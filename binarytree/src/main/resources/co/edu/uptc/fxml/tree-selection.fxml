@@ -11,7 +11,7 @@
     <children>
         <Label text="Seleccionar árbol" />
         <ComboBox fx:id="treeSelector" promptText="Elija un árbol" />
-        <Button fx:id="selectButton" text="Cargar" onAction="#selectTree" />
+        <Button fx:id="selectButton" text="Seleccionar" onAction="#selectTree" />
         <Label fx:id="selectedTreeInfoLabel" text="Ningún árbol seleccionado" />
         <Label fx:id="feedbackLabel" text="" />
     </children>

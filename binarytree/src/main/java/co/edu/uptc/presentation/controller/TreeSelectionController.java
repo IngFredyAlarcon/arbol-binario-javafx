@@ -2,9 +2,9 @@ package co.edu.uptc.presentation.controller;
 
 import co.edu.uptc.application.service.TreeSelectionService;
 import co.edu.uptc.domain.exception.TreeNotFoundException;
-import co.edu.uptc.domain.model.BinarySearchTree;
-import co.edu.uptc.domain.repository.BinaryTreeRepository;
-import co.edu.uptc.infraestructure.persistence.InMemoryBinaryTreeRepository;
+import co.edu.uptc.domain.model.BinaryTree;
+import co.edu.uptc.domain.model.Node;
+import co.edu.uptc.domain.model.TreeManager;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -17,11 +17,10 @@ import java.util.function.BiConsumer;
 
 public class TreeSelectionController {
 
-    private TreeSelectionService treeSelectionService =
-            new TreeSelectionService(new InMemoryBinaryTreeRepository());
+    private TreeSelectionService treeSelectionService;
 
     private Stage dialogStage;
-    private BiConsumer<String, BinarySearchTree> onTreeLoaded;
+    private BiConsumer<String, BinaryTree> onTreeSelected;
 
     @FXML
     private ComboBox<String> treeSelector;
@@ -35,18 +34,13 @@ public class TreeSelectionController {
     @FXML
     private Label feedbackLabel;
 
-    @FXML
-    private void initialize() {
-        refreshAvailableTrees();
-    }
-
     /**
-     * Permite reutilizar este control con un repositorio compartido con el resto
-     * de la aplicación (por ejemplo, el mismo que usa la ventana principal), en
-     * vez del repositorio de prueba creado por defecto.
+     * El controlador que abre este diálogo (MainViewController) debe invocar
+     * este método con el TreeManager de la aplicación antes de mostrar la
+     * ventana, para que el selector liste los árboles realmente activos.
      */
-    public void setRepository(BinaryTreeRepository repository) {
-        this.treeSelectionService = new TreeSelectionService(repository);
+    public void setTreeManager(TreeManager treeManager) {
+        this.treeSelectionService = new TreeSelectionService(treeManager);
         refreshAvailableTrees();
     }
 
@@ -54,9 +48,9 @@ public class TreeSelectionController {
         this.dialogStage = dialogStage;
     }
 
-    /** Se invoca cuando el usuario carga un árbol correctamente: nombre y árbol cargado. */
-    public void setOnTreeLoaded(BiConsumer<String, BinarySearchTree> onTreeLoaded) {
-        this.onTreeLoaded = onTreeLoaded;
+    /** Se invoca cuando el usuario selecciona un árbol: nombre y árbol elegido. */
+    public void setOnTreeSelected(BiConsumer<String, BinaryTree> onTreeSelected) {
+        this.onTreeSelected = onTreeSelected;
     }
 
     private void refreshAvailableTrees() {
@@ -66,7 +60,7 @@ public class TreeSelectionController {
         treeSelector.setDisable(!hasTrees);
         selectButton.setDisable(!hasTrees);
 
-        feedbackLabel.setText(hasTrees ? "" : "No hay árboles guardados todavía.");
+        feedbackLabel.setText(hasTrees ? "" : "No hay árboles disponibles todavía.");
     }
 
     @FXML
@@ -81,10 +75,10 @@ public class TreeSelectionController {
         try {
             treeSelectionService.selectTree(name);
             showSelectedTreeInfo();
-            feedbackLabel.setText("Árbol '" + name + "' cargado correctamente.");
+            feedbackLabel.setText("Árbol '" + name + "' seleccionado correctamente.");
 
-            if (onTreeLoaded != null) {
-                onTreeLoaded.accept(name, treeSelectionService.getSelectedTree());
+            if (onTreeSelected != null) {
+                onTreeSelected.accept(name, treeSelectionService.getSelectedTree());
             }
 
             if (dialogStage != null) {
@@ -96,9 +90,16 @@ public class TreeSelectionController {
     }
 
     private void showSelectedTreeInfo() {
-        BinarySearchTree selectedTree = treeSelectionService.getSelectedTree();
-        String status = selectedTree.isEmpty() ? "vacío" : selectedTree.size() + " nodo(s)";
+        BinaryTree selectedTree = treeSelectionService.getSelectedTree();
+        String status = selectedTree.isEmpty() ? "vacío" : countNodes(selectedTree.getRoot()) + " nodo(s)";
         selectedTreeInfoLabel.setText(
                 "Árbol actual: " + treeSelectionService.getSelectedTreeName() + " (" + status + ")");
+    }
+
+    private int countNodes(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + countNodes(node.getLeft()) + countNodes(node.getRight());
     }
 }

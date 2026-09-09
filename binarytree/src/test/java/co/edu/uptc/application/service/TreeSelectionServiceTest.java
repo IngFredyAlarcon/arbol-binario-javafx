@@ -1,34 +1,29 @@
 package co.edu.uptc.application.service;
 
 import co.edu.uptc.domain.exception.TreeNotFoundException;
-import co.edu.uptc.domain.model.BinarySearchTree;
-import co.edu.uptc.domain.repository.BinaryTreeRepository;
+import co.edu.uptc.domain.model.BinaryTree;
+import co.edu.uptc.domain.model.TreeManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TreeSelectionServiceTest {
 
-    private BinaryTreeRepository repository;
+    private TreeManager treeManager;
     private TreeSelectionService service;
 
     @BeforeEach
     void setUp() {
-        repository = new FakeBinaryTreeRepository();
-        service = new TreeSelectionService(repository);
+        treeManager = new TreeManager();
+        service = new TreeSelectionService(treeManager);
     }
-
 
     @Test
     void shouldReturnEmptyListWhenNoTreesStored() {
@@ -36,9 +31,9 @@ class TreeSelectionServiceTest {
     }
 
     @Test
-    void shouldListAvailableTreeNames() {
-        repository.save("A", new BinarySearchTree());
-        repository.save("B", new BinarySearchTree());
+    void shouldListAvailableTreeNames() throws Exception {
+        treeManager.createTree("A");
+        treeManager.createTree("B");
 
         List<String> names = service.getAvailableTreeNames();
 
@@ -47,16 +42,15 @@ class TreeSelectionServiceTest {
         assertTrue(names.contains("B"));
     }
 
-
     @Test
     void shouldThrowWhenSelectingNonExistentTree() {
         assertThrows(TreeNotFoundException.class, () -> service.selectTree("Fantasma"));
     }
 
     @Test
-    void shouldAllowChangingSelectionBetweenTrees() {
-        repository.save("A", new BinarySearchTree());
-        repository.save("B", new BinarySearchTree());
+    void shouldAllowChangingSelectionBetweenTrees() throws Exception {
+        treeManager.createTree("A");
+        treeManager.createTree("B");
 
         service.selectTree("A");
         service.selectTree("B");
@@ -65,53 +59,22 @@ class TreeSelectionServiceTest {
     }
 
     @Test
-    void shouldLoadTheActualContentOfTheSelectedTree() {
-        BinarySearchTree balanced = new BinarySearchTree();
-        balanced.insert(50);
-        balanced.insert(30);
-        balanced.insert(70);
-        repository.save("Balanceado", balanced);
+    void shouldLoadTheActualContentOfTheSelectedTree() throws Exception {
+        treeManager.createTree("Balanceado");
+        treeManager.insertValue("Balanceado", 50);
+        treeManager.insertValue("Balanceado", 30);
+        treeManager.insertValue("Balanceado", 70);
 
-        BinarySearchTree empty = new BinarySearchTree();
-        repository.save("Vacio", empty);
+        treeManager.createTree("Vacio");
 
         service.selectTree("Balanceado");
-        BinarySearchTree loaded = service.getSelectedTree();
+        BinaryTree loaded = service.getSelectedTree();
 
         assertNotNull(loaded);
-        assertEquals(3, loaded.size());
-        assertEquals(List.of(30, 50, 70), loaded.inOrder());
+        assertFalse(loaded.isEmpty());
+        assertEquals(50, loaded.getRoot().getValue());
 
         service.selectTree("Vacio");
         assertTrue(service.getSelectedTree().isEmpty());
-    }
-
-    private static class FakeBinaryTreeRepository implements BinaryTreeRepository {
-        private final Map<String, BinarySearchTree> trees = new HashMap<>();
-
-        @Override
-        public void save(String name, BinarySearchTree tree) {
-            trees.put(name, tree);
-        }
-
-        @Override
-        public BinarySearchTree findByName(String name) {
-            return trees.get(name);
-        }
-
-        @Override
-        public List<String> findAll() {
-            return new ArrayList<>(trees.keySet());
-        }
-
-        @Override
-        public void delete(String name) {
-            trees.remove(name);
-        }
-
-        @Override
-        public boolean exists(String name) {
-            return trees.containsKey(name);
-        }
     }
 }

@@ -2,8 +2,14 @@ package co.edu.uptc.presentation.controller;
 
 import co.edu.uptc.App;
 import co.edu.uptc.domain.exception.DuplicateTreeException;
+import co.edu.uptc.domain.exception.DuplicateValueException;
+import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.domain.model.BinaryTree;
+import co.edu.uptc.domain.model.Node;
 import co.edu.uptc.domain.model.TreeManager;
+import co.edu.uptc.infraestructure.persistence.BinaryTreeRepository;
+import co.edu.uptc.infraestructure.persistence.JsonRepository;
+import co.edu.uptc.presentation.TreeDrawer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +25,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class MainViewController {
 
@@ -36,6 +43,9 @@ public class MainViewController {
 
     @FXML
     private Button btnDeleteTree;
+
+    @FXML
+    private Button btnSelectTree;
 
     @FXML
     private TextField valueField;
@@ -66,6 +76,9 @@ public class MainViewController {
 
     private TreeManager treeManager;
 
+    private final TreeDrawer treeDrawer = new TreeDrawer();
+
+
     @FXML
     public void initialize() {
         treeManager = new TreeManager();
@@ -74,27 +87,25 @@ public class MainViewController {
     }
 
 
+
+
     public void refreshTreeComboBox() {
         comboTrees.getItems().clear();
         if (treeManager != null && treeManager.getTrees() != null) {
-            // Se agregan los objetos BinaryTree directamente o sus nombres guardados
-            for (BinaryTree tree : treeManager.getTrees().values()) {
-                comboTrees.getItems().add(tree.getName());
-            }
+            comboTrees.getItems().addAll(treeManager.getTrees().keySet());
         }
-  
         if (!comboTrees.getItems().isEmpty()) {
             comboTrees.getSelectionModel().selectFirst();
         }
+        redrawSelectedTree();
     }
+
     @FXML
     private void onCreateTree() {
         try {
 
             FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/CreateTreeView.fxml"));
             Parent root = loader.load();
-
-       
             CreateTreeController controller = loader.getController();
             controller.setTreeManager(treeManager);
             controller.setMainController(this);
@@ -102,7 +113,7 @@ public class MainViewController {
             Stage stage = new Stage();
             stage.setTitle("Crear nuevo árbol");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL); // Bloquea la ventana principal
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setResizable(false);
             stage.showAndWait();
 
@@ -115,37 +126,34 @@ public class MainViewController {
     @FXML
     private void onLoadTree() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/co/edu/uptc/fxml/tree-selection.fxml"));
-            Parent root = loader.load();
+            BinaryTreeRepository repository = new JsonRepository("arboles.json");
+            Map<String, BinaryTree> loadedTrees = repository.loadList();
 
-            TreeSelectionController controller = loader.getController();
-            controller.setRepository(repository);
-            controller.setOnTreeLoaded(this::handleTreeLoaded);
+            if (loadedTrees.isEmpty()) {
+                showError("No hay árboles guardados en 'data/arboles.json'. Inserta y guarda uno primero.");
+                return;
+            }
+            treeManager.setTrees(loadedTrees);
+            refreshTreeComboBox();
+            showSuccess("¡Árboles cargados con éxito desde el archivo JSON!");
 
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Cargar árbol");
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setScene(new Scene(root));
-            controller.setDialogStage(dialogStage);
-            dialogStage.showAndWait();
-        } catch (IOException e) {
-            logMessage("No fue posible abrir la ventana de carga: " + e.getMessage());
+        } catch (Exception e) {
+            showError("Error al cargar la persistencia: " + e.getMessage());
         }
-    }
-
-    private void handleTreeLoaded(String name, BinarySearchTree tree) {
-        currentTreeName = name;
-        currentTree = tree;
-
-        refreshTreeCombo();
-        comboTrees.setValue(name);
-        logMessage("Árbol '" + name + "' cargado correctamente.");
     }
 
     @FXML
     private void onSaveTree() {
-        
-        logMessage("Función de guardado en desarrollo...");
+        try {
+            co.edu.uptc.infraestructure.persistence.BinaryTreeRepository repository =
+                new co.edu.uptc.infraestructure.persistence.JsonRepository("arboles.json");
+
+            repository.saveList(treeManager.getTrees());
+            showSuccess("¡Todos los árboles se guardaron en 'data/arboles.json'!");
+
+        } catch (Exception e) {
+            showError("Error al guardar: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -173,47 +181,141 @@ public class MainViewController {
         String selected = comboTrees.getSelectionModel().getSelectedItem();
         if (selected != null) {
             logMessage("Árbol seleccionado: " + selected);
-            
+            redrawSelectedTree();
         }
+    }
+
+    /**
+     * RF-11: cuando hay varios árboles almacenados, permite elegir cuál de
+     * ellos se quiere consultar o modificar mediante una ventana dedicada,
+     * en vez de depender únicamente del combo de la barra superior.
+     */
+    @FXML
+    private void onOpenTreeSelector() {
+        if (treeManager == null || treeManager.getTrees().isEmpty()) {
+            showError("No hay árboles disponibles para seleccionar. Crea o carga uno primero.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/tree-selection.fxml"));
+            Parent root = loader.load();
+
+            TreeSelectionController controller = loader.getController();
+            controller.setTreeManager(treeManager);
+            controller.setOnTreeSelected(this::handleTreeSelected);
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Seleccionar árbol");
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.setResizable(false);
+            controller.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            showError("No fue posible abrir el selector de árboles: " + e.getMessage());
+        }
+    }
+
+    private void handleTreeSelected(String name, BinaryTree tree) {
+        comboTrees.getSelectionModel().select(name);
+        redrawSelectedTree();
+        logMessage("Árbol '" + name + "' seleccionado correctamente.");
     }
 
     @FXML
     private void onInsert() {
-       
-        logMessage("Función de inserción en desarrollo...");
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol para agregar el nodo.");
+            return;
+        }
+        String input = valueField.getText();
+        if (input == null || input.trim().isEmpty()) {
+            messagesArea.setText("Por favor, ingrese un número para ingresar.");
+            return;
+        }
+        try {
+            int valueToSearch = Integer.parseInt(input.trim());
+            treeManager.insertValue(selected, valueToSearch);
+            messagesArea.setText("¡Nodo "+ input+" agregado al arbol " + selected + " encontrado!");
+            redrawSelectedTree();
+            valueField.clear();
+
+        } catch (NumberFormatException e) {
+            messagesArea.setText("Error: Debe ingresar un número entero válido.");
+        } catch (IllegalStateException e) {
+            messagesArea.setText("Error de estado: " + e.getMessage());
+        } catch (Exception e) {
+            messagesArea.setText("Error inesperado: " + e.getMessage());
+        }
+    }
+
+    private void redrawSelectedTree() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        BinaryTree tree = selected == null ? null : treeManager.getTree(selected);
+        treeDrawer.draw(tree, treeDrawingPanel);
     }
 
     @FXML
     private void onSearch() {
-        
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol para agregar el nodo.");
+            return;
+        }
+        String input = valueField.getText();
+        if (input == null || input.trim().isEmpty()) {
+            messagesArea.setText("Por favor, ingrese un número para buscar.");
+            return;
+        }
+
+        try {
+            int valueToSearch = Integer.parseInt(input.trim());
+            Node foundNode = treeManager.searchNode(selected,valueToSearch);
+            messagesArea.setText("¡Nodo " + foundNode.getValue() + " encontrado!");
+            treeDrawer.highlightNode(treeDrawingPanel, valueToSearch);
+
+        } catch (NumberFormatException e) {
+            messagesArea.setText("Error: Debe ingresar un número entero válido.");
+            treeDrawer.resetNodeStyles(treeDrawingPanel);
+        } catch (ValueNotFoundException e) {
+            messagesArea.setText("El valor no existe en el árbol.");
+            treeDrawer.resetNodeStyles(treeDrawingPanel);
+        } catch (IllegalStateException e) {
+            messagesArea.setText("Error de estado: " + e.getMessage());
+        } catch (Exception e) {
+            messagesArea.setText("Error inesperado: " + e.getMessage());
+        }
+
         logMessage("Función de búsqueda en desarrollo...");
     }
 
     @FXML
     private void onDeleteValue() {
-        
+
         logMessage("Función de eliminación de valor en desarrollo...");
     }
 
     @FXML
     private void onPreorder() {
-        
+
         logMessage("Recorrido preorden en desarrollo...");
     }
 
     @FXML
     private void onInorder() {
-       
         logMessage("Recorrido inorden en desarrollo...");
     }
 
     @FXML
     private void onPostorder() {
-        
+
         logMessage("Recorrido postorden en desarrollo...");
     }
 
-  
+
     private void logMessage(String message) {
         messagesArea.appendText(message + "\n");
     }
