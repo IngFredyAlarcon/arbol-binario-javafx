@@ -87,8 +87,6 @@ public class MainViewController {
     }
 
 
-
-
     public void refreshTreeComboBox() {
         comboTrees.getItems().clear();
         if (treeManager != null && treeManager.getTrees() != null) {
