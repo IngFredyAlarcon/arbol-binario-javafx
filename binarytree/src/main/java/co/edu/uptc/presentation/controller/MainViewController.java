@@ -199,7 +199,9 @@ public class MainViewController {
         if (list == null || list.isEmpty()) {
             return "El árbol está vacío.";
         }
-        return String.join(" -> ", list.stream().map(Object::toString).toList());
+        return (String) list.stream()
+                .map(Object::toString)
+                .collect(java.util.stream.Collectors.joining(" -> "));
     }
 
     private void logMessage(String message) {
