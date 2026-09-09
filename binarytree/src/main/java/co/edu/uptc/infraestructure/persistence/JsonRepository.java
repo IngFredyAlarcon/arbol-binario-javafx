@@ -1,11 +1,14 @@
 package co.edu.uptc.infraestructure.persistence;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import co.edu.uptc.domain.model.BinaryTree;
 
@@ -44,6 +47,22 @@ public class JsonRepository implements BinaryTreeRepository {
             System.out.println("Archivo guardado con éxito en: " + pathname); 
         } catch (Exception e) {
             System.err.println("Error al escribir: " + e.getMessage());
+        }
+    }
+    @Override
+    public Map<String, BinaryTree> loadList() {
+        File archivo = new File(pathname);
+        if (!archivo.exists()) {
+            return new HashMap<>();
+        }
+
+        try (FileReader reader = new FileReader(archivo)) {
+            Type mapType = new TypeToken<Map<String, BinaryTree>>() {}.getType();
+            Map<String, BinaryTree> trees = gson.fromJson(reader, mapType);
+            return trees != null ? trees : new HashMap<>();
+        } catch (Exception e) {
+            System.err.println("Error al leer el archivo JSON: " + e.getMessage());
+            return new HashMap<>();
         }
     }
 }
