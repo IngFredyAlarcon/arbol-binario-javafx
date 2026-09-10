@@ -10,6 +10,7 @@ import co.edu.uptc.domain.model.TreeManager;
 import co.edu.uptc.infraestructure.persistence.BinaryTreeRepository;
 import co.edu.uptc.infraestructure.persistence.JsonRepository;
 import co.edu.uptc.presentation.TreeDrawer;
+import co.edu.uptc.util.PdfTreeExporter;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 import java.io.IOException;
 import java.util.Map;
@@ -554,4 +557,59 @@ public class MainViewController {
                 message + "\n"
         );
     }
+    @FXML
+private void onExportPdf() {
+    String selected = comboTrees.getSelectionModel().getSelectedItem();
+
+    if (selected == null) {
+        showError("No hay ningún árbol seleccionado.");
+        return;
+    }
+
+    BinaryTree tree = treeManager.getTree(selected);
+
+    if (tree == null || tree.isEmpty()) {
+        showError("El árbol seleccionado está vacío.");
+        return;
+    }
+
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Guardar árbol como PDF");
+
+    fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Archivo PDF", "*.pdf")
+    );
+
+    fileChooser.setInitialFileName(selected + ".pdf");
+
+    File archivoDestino = fileChooser.showSaveDialog(
+            treeDrawingPanel.getScene().getWindow()
+    );
+
+    if (archivoDestino == null) {
+        return;
+    }
+
+    if (!archivoDestino.getName().toLowerCase().endsWith(".pdf")) {
+        archivoDestino = new File(
+                archivoDestino.getAbsolutePath() + ".pdf"
+        );
+    }
+
+    try {
+        PdfTreeExporter exporter = new PdfTreeExporter();
+
+        exporter.export(
+                treeDrawingPanel,
+                selected,
+                archivoDestino
+        );
+
+        showSuccess("Árbol exportado correctamente a PDF.");
+
+    } catch (Exception e) {
+        showError("No se pudo exportar el árbol a PDF: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 }

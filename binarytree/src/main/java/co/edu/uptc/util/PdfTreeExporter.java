@@ -1,4 +1,4 @@
-package co.edu.uptc.Export;
+package co.edu.uptc.util;
 
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.PixelReader;
