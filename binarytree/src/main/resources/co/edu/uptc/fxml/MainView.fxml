@@ -11,7 +11,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.Pane?>
 <BorderPane xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="co.edu.uptc.presentation.controller.TreeDrawController" stylesheets="@../css/styles.css" prefHeight="700.0" prefWidth="1000.0">
+            fx:controller="co.edu.uptc.presentation.controller.MainViewController" stylesheets="@../css/styles.css" prefHeight="700.0" prefWidth="1000.0">
 
     <!-- ============ TOP BAR: general tree management (CRUD) ============ -->
     <top>
