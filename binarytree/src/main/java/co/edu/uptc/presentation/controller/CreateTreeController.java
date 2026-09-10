@@ -1,7 +1,7 @@
 package co.edu.uptc.presentation.controller;
 
+import co.edu.uptc.application.service.TreeManager;
 import co.edu.uptc.domain.exception.DuplicateTreeException;
-import co.edu.uptc.domain.model.TreeManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

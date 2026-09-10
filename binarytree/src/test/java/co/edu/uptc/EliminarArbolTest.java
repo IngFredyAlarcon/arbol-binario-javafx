@@ -1,4 +1,4 @@
-package co.edu.uptc.application.service;
+package co.edu.uptc;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import co.edu.uptc.application.service.TreeManager;
 import co.edu.uptc.domain.exception.DuplicateValueException;
 import co.edu.uptc.domain.exception.EmptyTreeException;
 import co.edu.uptc.domain.exception.InvalidTreeNameException;
@@ -19,24 +20,24 @@ import co.edu.uptc.domain.exception.NoTreeSelectedException;
 import co.edu.uptc.domain.exception.TreeNotFoundException;
 import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.infraestructure.exception.PersistenceException;
-import co.edu.uptc.infraestructure.persistence.JsonBinaryTreeRepository;
+import co.edu.uptc.infraestructure.persistence.JsonRepository;
 
 public class EliminarArbolTest {
 
-    private JsonBinaryTreeRepository repository;
-    private EliminarArbolService service;
+    private JsonRepository repository;
+    private TreeManager service;
 
     @BeforeEach
     public void setUp() {
-        // Inicializa el repositorio real
-        repository = new JsonBinaryTreeRepository();
-        service = new EliminarArbolService(repository);
+        // Usa el repositorio e instancia el servicio TreeManager
+        repository = new JsonRepository("BinaryTreeTest.json");
+        service = new TreeManager(repository);
     }
 
     @Test
     public void testEliminarArbolNombreNulo() {
         assertThrows(NoTreeSelectedException.class, () -> {
-            service.eliminarArbol(null);
+            service.deleteTree(null);
         });
     }
 
@@ -46,20 +47,24 @@ public class EliminarArbolTest {
         assertFalse(repository.exists(nombreInexistente));
 
         assertThrows(TreeNotFoundException.class, () -> {
-        service.eliminarArbol("Arbol InexistenteXYZ");
-    });
+            service.deleteTree(nombreInexistente);
+        });
     }
 
     @Test
     @DisplayName("Elimina correctamente un árbol existente")
     public void testEliminarArbolExitoso() {
-        String nombreExistente = "Arbol 1";
+        String nombreExistente = "ArbolTestPrueba";
 
-        if (repository.exists(nombreExistente)) {
+        try {
+            service.createTree(nombreExistente);
+        } catch (Exception ignored) {}
+
+        if (service.treeExists(nombreExistente)) {
             assertDoesNotThrow(() -> {
-                service.eliminarArbol(nombreExistente);
+                service.deleteTree(nombreExistente);
             });
-            assertFalse(repository.exists(nombreExistente));
+            assertFalse(service.treeExists(nombreExistente));
         }
     }
 
@@ -68,8 +73,6 @@ public class EliminarArbolTest {
         List<String> nombres = service.obtenerNombresArboles();
         assertNotNull(nombres);
     }
-
-
 
     @Test
     public void testDuplicateValueException() {

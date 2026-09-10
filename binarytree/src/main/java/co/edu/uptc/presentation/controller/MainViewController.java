@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.util.Optional;
 
 import co.edu.uptc.App;
-import co.edu.uptc.application.service.EliminarArbolService;
+import co.edu.uptc.application.service.TreeManager;
 import co.edu.uptc.domain.exception.NoTreeSelectedException;
 import co.edu.uptc.domain.exception.TreeNotFoundException;
+import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.domain.model.BinaryTree;
-import co.edu.uptc.domain.model.TreeManager;
+import co.edu.uptc.domain.model.Node;
 import co.edu.uptc.infraestructure.exception.PersistenceException;
-import co.edu.uptc.infraestructure.persistence.JsonBinaryTreeRepository;
+import co.edu.uptc.infraestructure.persistence.JsonRepository;
+import co.edu.uptc.presentation.TreeDrawer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -69,13 +71,14 @@ public class MainViewController {
     @FXML
     private TextArea messagesArea;
 
-    private EliminarArbolService sv;
+    
     private TreeManager treeManager;
+
+    private final TreeDrawer treeDrawer = new TreeDrawer();
 
     @FXML
     public void initialize() {
-        this.sv = new EliminarArbolService(new JsonBinaryTreeRepository());
-        this.treeManager = new TreeManager();
+        treeManager = new TreeManager(new JsonRepository("BinaryTree.json"));
         refreshTreeComboBox();
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
@@ -83,10 +86,13 @@ public class MainViewController {
     public void refreshTreeComboBox() {
         comboTrees.getItems().clear();
         
-        // Cargar nombres desde el servicio
-        if (sv != null) {
-            comboTrees.getItems().addAll(sv.obtenerNombresArboles());
+        if(treeManager != null){
+            comboTrees.getItems().addAll(treeManager.obtenerNombresArboles());
         }
+        // Cargar nombres desde el servicio
+        // if (sv != null) {
+        // comboTrees.getItems().addAll(sv.obtenerNombresArboles());
+        // }
 
         // Cargar también desde treeManager si posee elementos adicionales
         if (treeManager != null && treeManager.getTrees() != null) {
@@ -99,6 +105,9 @@ public class MainViewController {
 
         if (!comboTrees.getItems().isEmpty()) {
             comboTrees.getSelectionModel().selectFirst();
+            redrawSelectedTree();
+        } else {
+            treeDrawer.draw(null, treeDrawingPanel);
         }
     }
 
@@ -125,14 +134,27 @@ public class MainViewController {
         }
     }
 
-    @FXML
+   @FXML
     private void onLoadTree() {
-        logMessage("Función de carga en desarrollo...");
+        try {
+            treeManager.loadFromRepository();
+            refreshTreeComboBox();
+            showSuccess("¡Árboles cargados con éxito desde el archivo JSON!");
+
+        } catch (Exception e) {
+            showError("Error al cargar la persistencia: " + e.getMessage());
+        }
     }
 
     @FXML
     private void onSaveTree() {
-        logMessage("Función de guardado en desarrollo...");
+        try {
+            treeManager.saveTree(comboTrees.getValue(), treeManager.getTree(comboTrees.getValue()));
+            showSuccess("¡Todos los árboles se guardaron en 'data/arboles.json'!");
+
+        } catch (Exception e) {
+            showError("Error al guardar: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -151,14 +173,9 @@ public class MainViewController {
             Optional<ButtonType> resultado = confirmacion.showAndWait();
 
             if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-                sv.eliminarArbol(arbolSeleccionado);
-                
-                if (treeManager != null) {
-                    treeManager.deleteTree(arbolSeleccionado);
-                }
-                
+                treeManager.deleteTree(arbolSeleccionado);
                 refreshTreeComboBox();
-
+    
                 if (messagesArea != null) {
                     messagesArea.appendText("Árbol '" + arbolSeleccionado + "' eliminado exitosamente.\n");
                 }
@@ -173,32 +190,99 @@ public class MainViewController {
             mostrarAlerta(Alert.AlertType.ERROR, "Error inesperado", "Ocurrió un error no controlado: " + e.getMessage());
         }
     }
+     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
 
     @FXML
     private void onSelectTree() {
         String selected = comboTrees.getSelectionModel().getSelectedItem();
         if (selected != null) {
             logMessage("Árbol seleccionado: " + selected);
+            redrawSelectedTree();
+        }
+    }
+    @FXML 
+    private void onInsert() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol para agregar el nodo.");
+            return;
+        }
+        String input = valueField.getText();
+        if (input == null || input.trim().isEmpty()) {
+            messagesArea.setText("Por favor, ingrese un número para ingresar.");
+            return;
+        }
+        try {
+            int valueToSearch = Integer.parseInt(input.trim());
+            treeManager.insertValue(selected, valueToSearch);
+            messagesArea.setText("¡Nodo "+ input+" agregado al arbol " + selected + " encontrado!\n");
+            redrawSelectedTree();
+            valueField.clear();
+
+        } catch (NumberFormatException e) {
+            messagesArea.setText("Error: Debe ingresar un número entero válido.");
+        } catch (IllegalStateException e) {
+            messagesArea.setText("Error de estado: " + e.getMessage());
+        } catch (Exception e) {
+            messagesArea.setText("Error inesperado: " + e.getMessage());
         }
     }
 
-    @FXML
-    private void onInsert() {
-        logMessage("Función de inserción en desarrollo...");
+    private void redrawSelectedTree() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        BinaryTree tree = selected == null ? null : treeManager.getTree(selected);
+        treeDrawer.draw(tree, treeDrawingPanel);
     }
 
     @FXML
     private void onSearch() {
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol para agregar el nodo.");
+            return;
+        }
+        String input = valueField.getText();
+        if (input == null || input.trim().isEmpty()) {
+            messagesArea.setText("Por favor, ingrese un número para buscar.");
+            return;
+        }
+
+        try {
+            int valueToSearch = Integer.parseInt(input.trim());
+            Node foundNode = treeManager.searchNode(selected,valueToSearch);
+            messagesArea.setText("¡Nodo " + foundNode.getValue() + " encontrado!");
+            treeDrawer.highlightNode(treeDrawingPanel, valueToSearch);
+
+        } catch (NumberFormatException e) {
+            messagesArea.setText("Error: Debe ingresar un número entero válido.");
+            treeDrawer.resetNodeStyles(treeDrawingPanel);
+        } catch (ValueNotFoundException e) {
+            messagesArea.setText("El valor no existe en el árbol.");
+            treeDrawer.resetNodeStyles(treeDrawingPanel);
+        } catch (IllegalStateException e) {
+            messagesArea.setText("Error de estado: " + e.getMessage());
+        } catch (Exception e) {
+            messagesArea.setText("Error inesperado: " + e.getMessage());
+        }
+        
         logMessage("Función de búsqueda en desarrollo...");
     }
 
     @FXML
     private void onDeleteValue() {
+        
         logMessage("Función de eliminación de valor en desarrollo...");
     }
 
     @FXML
     private void onPreorder() {
+        
         logMessage("Recorrido preorden en desarrollo...");
     }
 
@@ -209,32 +293,20 @@ public class MainViewController {
 
     @FXML
     private void onPostorder() {
+        
         logMessage("Recorrido postorden en desarrollo...");
     }
 
+  
     private void logMessage(String message) {
-        if (messagesArea != null) {
-            messagesArea.appendText(message + "\n");
-        }
+        messagesArea.appendText(message + "\n");
     }
 
     private void showError(String message) {
-        if (messagesArea != null) {
-            messagesArea.appendText(message + "\n");
-        }
+        messagesArea.appendText( message + "\n");
     }
 
     private void showSuccess(String message) {
-        if (messagesArea != null) {
-            messagesArea.appendText(message + "\n");
-        }
-    }
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
+        messagesArea.appendText( message + "\n");
     }
 }
