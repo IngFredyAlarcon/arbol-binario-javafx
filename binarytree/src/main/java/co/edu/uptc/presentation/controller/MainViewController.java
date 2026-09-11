@@ -206,6 +206,7 @@ public class MainViewController {
             redrawSelectedTree();
         }
     }
+
     @FXML 
     private void onInsert() {
         String selected = comboTrees.getSelectionModel().getSelectedItem();
@@ -244,7 +245,7 @@ public class MainViewController {
     private void onSearch() {
         String selected = comboTrees.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Selecciona un árbol para agregar el nodo.");
+            showError("Selecciona un árbol para buscar el nodo.");
             return;
         }
         String input = valueField.getText();
@@ -255,7 +256,7 @@ public class MainViewController {
 
         try {
             int valueToSearch = Integer.parseInt(input.trim());
-            Node foundNode = treeManager.searchNode(selected,valueToSearch);
+            Node foundNode = treeManager.searchNode(selected, valueToSearch);
             messagesArea.setText("¡Nodo " + foundNode.getValue() + " encontrado!");
             treeDrawer.highlightNode(treeDrawingPanel, valueToSearch);
 
@@ -270,8 +271,6 @@ public class MainViewController {
         } catch (Exception e) {
             messagesArea.setText("Error inesperado: " + e.getMessage());
         }
-        
-        logMessage("Función de búsqueda en desarrollo...");
     }
 
     @FXML
@@ -305,31 +304,55 @@ public class MainViewController {
 
     @FXML
     private void onPreorder() {
-        
-        logMessage("Recorrido preorden en desarrollo...");
+        BinaryTree selectedTree = getSelectedTree();
+        if (selectedTree == null) return;
+
+        logMessage("Preorden: " + formatTraversal(selectedTree.getPreOrder()));
     }
 
     @FXML
     private void onInorder() {
-        logMessage("Recorrido inorden en desarrollo...");
+        BinaryTree selectedTree = getSelectedTree();
+        if (selectedTree == null) return;
+
+        logMessage("Inorden: " + formatTraversal(selectedTree.getInOrder()));
     }
 
     @FXML
     private void onPostorder() {
-        
-        logMessage("Recorrido postorden en desarrollo...");
+        BinaryTree selectedTree = getSelectedTree();
+        if (selectedTree == null) return;
+
+        logMessage("Postorden: " + formatTraversal(selectedTree.getPostOrder()));
     }
 
-  
+    private BinaryTree getSelectedTree() {
+        String selectedName = comboTrees.getSelectionModel().getSelectedItem();
+        if (selectedName == null) {
+            showError("No hay ningún árbol seleccionado.");
+            return null;
+        }
+        return treeManager.getTree(selectedName);
+    }
+
+    private String formatTraversal(java.util.List list) {
+        if (list == null || list.isEmpty()) {
+            return "El árbol está vacío.";
+        }
+        return (String) list.stream()
+                .map(Object::toString)
+                .collect(java.util.stream.Collectors.joining(" -> "));
+    }
+
     private void logMessage(String message) {
         messagesArea.appendText(message + "\n");
     }
 
     private void showError(String message) {
-        messagesArea.appendText( message + "\n");
+        messagesArea.appendText(message + "\n");
     }
 
     private void showSuccess(String message) {
-        messagesArea.appendText( message + "\n");
+        messagesArea.appendText(message + "\n");
     }
 }
