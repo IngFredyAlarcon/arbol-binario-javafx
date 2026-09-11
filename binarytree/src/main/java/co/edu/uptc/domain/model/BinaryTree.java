@@ -59,10 +59,7 @@ public class BinaryTree {
      * @return El objeto Node que contiene el valor buscado.
      * @throws ValueNotFoundException Si el valor no se encuentra en el árbol.
      */
-    public Node searchNode(int value) {
-        return searchNodeRecursive(root, value);
-    }
-    
+
     /**
      * Método auxiliar recursivo que navega por las ramas del árbol comparando valores.
      * 
@@ -151,7 +148,7 @@ public class BinaryTree {
         root = null;
     }
 
-}
+
     public List<Integer> getPreOrder() {
         List<Integer> result = new ArrayList<>();
         preOrder(root, result);
