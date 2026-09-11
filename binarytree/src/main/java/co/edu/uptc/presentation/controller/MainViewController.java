@@ -145,12 +145,8 @@ public class MainViewController {
     @FXML
     private void onSaveTree() {
         try {
-            BinaryTreeRepository repository = 
-                new JsonRepository("arboles.json");
-
-            repository.saveList(treeManager.getTrees());
-            showSuccess("¡Todos los árboles se guardaron en 'data/arboles.json'!");
-
+            treeManager.saveTree(comboTrees.getValue(), treeManager.getTree(comboTrees.getValue()));
+            showSuccess("¡Todos los árboles se guardaron exitosamente!");
         } catch (Exception e) {
             showError("Error al guardar: " + e.getMessage());
         }
