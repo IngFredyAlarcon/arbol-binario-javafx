@@ -76,6 +76,18 @@ public class TreeManager {
         return trees.get(name).searchNode(value);
     }
 
+    public void deleteValue(String name, int value) {
+        if (name == null) {
+            throw new IllegalStateException("Primero debes crear un árbol.");
+        }
+        BinaryTree tree = trees.get(name);
+        if (tree == null) {
+            throw new TreeNotFoundException(name);
+        }
+        tree.delete(value);
+        repository.saveList(trees);
+    }
+
     public void deleteTree(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new NoTreeSelectedException();

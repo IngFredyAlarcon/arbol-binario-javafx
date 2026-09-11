@@ -79,10 +79,66 @@ public class BinaryTree {
         return searchNodeRecursive(current.getRight(), value);
     }
 
+    public boolean contains(int value) {
+        return containsRecursive(root, value);
+    }
+
+    private boolean containsRecursive(Node current, int value) {
+        if (current == null) {
+            return false;
+        }
+        if (value == current.getValue()) {
+            return true;
+        }
+        if (value < current.getValue()) {
+            return containsRecursive(current.getLeft(), value);
+        }
+        return containsRecursive(current.getRight(), value);
+    }
+
+    public void delete(int value) {
+        if (!contains(value)) {
+            throw new ValueNotFoundException(value);
+        }
+        root = deleteRecursive(root, value);
+    }
+
+    private Node deleteRecursive(Node current, int value) {
+        if (current == null) {
+            return null;
+        }
+        if (value < current.getValue()) {
+            current.setLeft(deleteRecursive(current.getLeft(), value));
+        } else if (value > current.getValue()) {
+            current.setRight(deleteRecursive(current.getRight(), value));
+        } else {
+            if (current.getLeft() == null && current.getRight() == null) {
+                return null;
+            }
+            if (current.getLeft() == null) {
+                return current.getRight();
+            }
+            if (current.getRight() == null) {
+                return current.getLeft();
+            }
+            int successorValue = findMin(current.getRight());
+            Node replacement = new Node(successorValue);
+            replacement.setLeft(current.getLeft());
+            replacement.setRight(deleteRecursive(current.getRight(), successorValue));
+            return replacement;
+        }
+        return current;
+    }
+
+    private int findMin(Node current) {
+        if (current.getLeft() == null) {
+            return current.getValue();
+        }
+        return findMin(current.getLeft());
+    }
+
     public void clear() {
         root = null;
     }
-
-    
 
 }
