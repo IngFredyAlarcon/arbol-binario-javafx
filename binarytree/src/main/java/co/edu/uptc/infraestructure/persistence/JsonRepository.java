@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -12,6 +14,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import co.edu.uptc.domain.model.BinaryTree;
+import co.edu.uptc.infraestructure.exception.PersistenceException;
 
 public class JsonRepository implements BinaryTreeRepository {
     private String pathname;
@@ -47,7 +50,7 @@ public class JsonRepository implements BinaryTreeRepository {
             gson.toJson(trees, writer);
             System.out.println("Archivo guardado con éxito en: " + pathname); 
         } catch (Exception e) {
-            System.err.println("Error al escribir: " + e.getMessage());
+            throw new PersistenceException("Error al guardar en el archivo JSON: " + e.getMessage(), e);
         }
     }
     @Override
@@ -62,8 +65,36 @@ public class JsonRepository implements BinaryTreeRepository {
             Map<String, BinaryTree> trees = gson.fromJson(reader, mapType);
             return trees != null ? trees : new HashMap<>();
         } catch (Exception e) {
-            System.err.println("Error al leer el archivo JSON: " + e.getMessage());
-            return new HashMap<>();
+            throw new PersistenceException("Error al leer el archivo JSON: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void save(String name, BinaryTree tree) {
+        Map<String, BinaryTree> trees = loadList();
+        trees.put(name, tree);
+        saveList(trees);
+    }
+
+    @Override
+    public BinaryTree findByName(String name) {
+        return loadList().get(name);
+    }
+
+    @Override
+    public List<String> findAll() {
+        return new ArrayList<>(loadList().keySet());
+    }
+
+    @Override
+    public void delete(String name) {
+        Map<String, BinaryTree> trees = loadList();
+        trees.remove(name);
+        saveList(trees);
+    }
+
+    @Override
+    public boolean exists(String name) {
+        return loadList().containsKey(name);
     }
 }

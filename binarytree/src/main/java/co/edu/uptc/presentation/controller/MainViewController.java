@@ -1,13 +1,16 @@
 package co.edu.uptc.presentation.controller;
 
+import java.io.IOException;
+import java.util.Optional;
+
 import co.edu.uptc.App;
-import co.edu.uptc.domain.exception.DuplicateTreeException;
-import co.edu.uptc.domain.exception.DuplicateValueException;
+import co.edu.uptc.application.service.TreeManager;
+import co.edu.uptc.domain.exception.NoTreeSelectedException;
+import co.edu.uptc.domain.exception.TreeNotFoundException;
 import co.edu.uptc.domain.exception.ValueNotFoundException;
 import co.edu.uptc.domain.model.BinaryTree;
 import co.edu.uptc.domain.model.Node;
-import co.edu.uptc.domain.model.TreeManager;
-import co.edu.uptc.infraestructure.persistence.BinaryTreeRepository;
+import co.edu.uptc.infraestructure.exception.PersistenceException;
 import co.edu.uptc.infraestructure.persistence.JsonRepository;
 import co.edu.uptc.presentation.TreeDrawer;
 import javafx.fxml.FXML;
@@ -23,9 +26,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.Map;
 
 public class MainViewController {
 
@@ -71,27 +71,40 @@ public class MainViewController {
     @FXML
     private TextArea messagesArea;
 
+    
     private TreeManager treeManager;
 
     private final TreeDrawer treeDrawer = new TreeDrawer();
 
-
     @FXML
     public void initialize() {
-        treeManager = new TreeManager();
+        treeManager = new TreeManager(new JsonRepository("BinaryTree.json"));
         refreshTreeComboBox();
         logMessage("Aplicación iniciada. Crea un nuevo árbol para comenzar.");
     }
 
     public void refreshTreeComboBox() {
         comboTrees.getItems().clear();
-        if (treeManager != null && treeManager.getTrees() != null) {
-            comboTrees.getItems().addAll(treeManager.getTrees().keySet());
+        
+        if(treeManager != null){
+            comboTrees.getItems().addAll(treeManager.obtenerNombresArboles());
         }
+
+        // Cargar también desde treeManager si posee elementos adicionales
+        if (treeManager != null && treeManager.getTrees() != null) {
+            for (BinaryTree tree : treeManager.getTrees().values()) {
+                if (!comboTrees.getItems().contains(tree.getName())) {
+                    comboTrees.getItems().add(tree.getName());
+                }
+            }
+        }
+
         if (!comboTrees.getItems().isEmpty()) {
             comboTrees.getSelectionModel().selectFirst();
+            redrawSelectedTree();
+        } else {
+            treeDrawer.draw(null, treeDrawingPanel);
         }
-        redrawSelectedTree();
     }
 
     @FXML
@@ -99,6 +112,7 @@ public class MainViewController {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("fxml/CreateTreeView.fxml"));
             Parent root = loader.load();
+
             CreateTreeController controller = loader.getController();
             controller.setTreeManager(treeManager);
             controller.setMainController(this);
@@ -116,17 +130,10 @@ public class MainViewController {
         }
     }
 
-    @FXML
+   @FXML
     private void onLoadTree() {
         try {
-            BinaryTreeRepository repository = new JsonRepository("arboles.json");
-            Map<String, BinaryTree> loadedTrees = repository.loadList();
-
-            if (loadedTrees.isEmpty()) {
-                showError("No hay árboles guardados en 'data/arboles.json'. Inserta y guarda uno primero.");
-                return;
-            }
-            treeManager.setTrees(loadedTrees);
+            treeManager.loadFromRepository();
             refreshTreeComboBox();
             showSuccess("¡Árboles cargados con éxito desde el archivo JSON!");
 
@@ -138,12 +145,8 @@ public class MainViewController {
     @FXML
     private void onSaveTree() {
         try {
-            BinaryTreeRepository repository = 
-                new JsonRepository("arboles.json");
-
-            repository.saveList(treeManager.getTrees());
-            showSuccess("¡Todos los árboles se guardaron en 'data/arboles.json'!");
-
+            treeManager.saveTree(comboTrees.getValue(), treeManager.getTree(comboTrees.getValue()));
+            showSuccess("¡Todos los árboles se guardaron exitosamente!");
         } catch (Exception e) {
             showError("Error al guardar: " + e.getMessage());
         }
@@ -151,22 +154,43 @@ public class MainViewController {
 
     @FXML
     private void onDeleteTree() {
-        String selected = comboTrees.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showError("Selecciona un árbol para eliminar.");
-            return;
-        }
+        String arbolSeleccionado = comboTrees.getValue();
+        try {
+            if (arbolSeleccionado == null || arbolSeleccionado.trim().isEmpty()) {
+                throw new NoTreeSelectedException();
+            }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar eliminación");
-        alert.setHeaderText("¿Estás seguro de eliminar el árbol '" + selected + "'?");
-        alert.setContentText("Esta acción no se puede deshacer.");
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar eliminación");
+            confirmacion.setHeaderText(null);
+            confirmacion.setContentText("¿Está seguro de que desea eliminar el árbol '" + arbolSeleccionado + "'?");
 
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            treeManager.deleteTree(selected);
-            refreshTreeComboBox();
-            logMessage("Árbol '" + selected + "' eliminado.");
+            Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+            if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+                treeManager.deleteTree(arbolSeleccionado);
+                refreshTreeComboBox();
+    
+                if (messagesArea != null) {
+                    messagesArea.appendText("Árbol '" + arbolSeleccionado + "' eliminado exitosamente.\n");
+                }
+            }
+        } catch (NoTreeSelectedException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida", e.getMessage());
+        } catch (TreeNotFoundException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Árbol no encontrado", e.getMessage());
+        } catch (PersistenceException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error de archivo", "No se pudo actualizar el archivo: " + e.getMessage());
+        } catch (Exception e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error inesperado", "Ocurrió un error no controlado: " + e.getMessage());
         }
+    }
+     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 
     @FXML

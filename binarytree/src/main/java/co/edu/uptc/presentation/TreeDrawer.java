@@ -1,14 +1,14 @@
 package co.edu.uptc.presentation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import co.edu.uptc.domain.model.BinaryTree;
 import co.edu.uptc.domain.model.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Responsable únicamente de dibujar un BinaryTree dentro de un Pane de JavaFX.
