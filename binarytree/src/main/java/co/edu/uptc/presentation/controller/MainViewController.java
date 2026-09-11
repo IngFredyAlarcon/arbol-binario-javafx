@@ -89,10 +89,6 @@ public class MainViewController {
         if(treeManager != null){
             comboTrees.getItems().addAll(treeManager.obtenerNombresArboles());
         }
-        // Cargar nombres desde el servicio
-        // if (sv != null) {
-        // comboTrees.getItems().addAll(sv.obtenerNombresArboles());
-        // }
 
         // Cargar también desde treeManager si posee elementos adicionales
         if (treeManager != null && treeManager.getTrees() != null) {
@@ -150,8 +146,7 @@ public class MainViewController {
     private void onSaveTree() {
         try {
             treeManager.saveTree(comboTrees.getValue(), treeManager.getTree(comboTrees.getValue()));
-            showSuccess("¡Todos los árboles se guardaron en 'data/arboles.json'!");
-
+            showSuccess("¡Todos los árboles se guardaron exitosamente!");
         } catch (Exception e) {
             showError("Error al guardar: " + e.getMessage());
         }
