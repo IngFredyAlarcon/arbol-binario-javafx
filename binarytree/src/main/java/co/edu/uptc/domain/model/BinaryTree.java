@@ -3,6 +3,11 @@ package co.edu.uptc.domain.model;
 import co.edu.uptc.domain.exception.DuplicateValueException;
 import co.edu.uptc.domain.exception.ValueNotFoundException;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 public class BinaryTree {
 
     private Node root;
@@ -46,26 +51,11 @@ public class BinaryTree {
         }
         return current;
     }
-    /**
-     * Inicia la búsqueda de un nodo específico en el árbol binario.
-     * Es el método público que interactúa con las capas superiores.
-     * 
-     * @param value El valor entero que se desea buscar.
-     * @return El objeto Node que contiene el valor buscado.
-     * @throws ValueNotFoundException Si el valor no se encuentra en el árbol.
-     */
+
     public Node searchNode(int value) {
         return searchNodeRecursive(root, value);
     }
-    
-    /**
-     * Método auxiliar recursivo que navega por las ramas del árbol comparando valores.
-     * 
-     * @param current El nodo actual que se está evaluando (comienza en la raíz).
-     * @param value El valor entero a buscar.
-     * @return El objeto Node que coincide con el valor.
-     * @throws ValueNotFoundException Si se llega a una rama nula, indicando que el número no existe.
-     */
+
     private Node searchNodeRecursive(Node current, int value) {
         if (current == null) {
             throw new ValueNotFoundException(value);
@@ -79,10 +69,63 @@ public class BinaryTree {
         return searchNodeRecursive(current.getRight(), value);
     }
 
-    public void clear() {
-        root = null;
+    public List<Integer> getPreOrder() {
+        List<Integer> result = new ArrayList<>();
+        preOrder(root, result);
+        return result;
     }
 
-    
+    private void preOrder(Node node, List<Integer> result) {
+        if (node != null) {
+            result.add(node.getValue());
+            preOrder(node.getLeft(), result);
+            preOrder(node.getRight(), result);
+        }
+    }
 
-}
+    public List<Integer> getInOrder() {
+        List<Integer> result = new ArrayList<>();
+        inOrder(root, result);
+        return result;
+    }
+
+    private void inOrder(Node node, List<Integer> result) {
+        if (node != null) {
+            inOrder(node.getLeft(), result);
+            result.add(node.getValue());
+            inOrder(node.getRight(), result);
+        }
+    }
+
+    public List<Integer> getPostOrder() {
+        List<Integer> result = new ArrayList<>();
+        postOrder(root, result);
+        return result;
+    }
+
+    private void postOrder(Node node, List<Integer> result) {
+        if (node != null) {
+            postOrder(node.getLeft(), result);
+            postOrder(node.getRight(), result);
+            result.add(node.getValue());
+        }
+    }
+
+    public List<Integer> getLevelOrder() {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            Node current = queue.poll();
+            result.add(current.getValue());
+
+            if (current.getLeft() != null) queue.add(current.getLeft());
+            if (current.getRight() != null) queue.add(current.getRight());
+        }
+
+        return result;
+    }
+}   
