@@ -217,7 +217,7 @@ public class MainViewController {
         try {
             int valueToSearch = Integer.parseInt(input.trim());
             treeManager.insertValue(selected, valueToSearch);
-            messagesArea.setText("¡Nodo " + input + " agregado al arbol " + selected + " encontrado!");
+            messagesArea.setText("¡Nodo "+ input+" agregado al arbol " + selected + " encontrado!\n");
             redrawSelectedTree();
             valueField.clear();
 
@@ -270,7 +270,31 @@ public class MainViewController {
 
     @FXML
     private void onDeleteValue() {
-        logMessage("Función de eliminación de valor en desarrollo...");
+        String selected = comboTrees.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un árbol para eliminar el nodo.");
+            return;
+        }
+        String input = valueField.getText();
+        if (input == null || input.trim().isEmpty()) {
+            messagesArea.setText("Por favor, ingrese un número para eliminar.");
+            return;
+        }
+        try {
+            int valueToDelete = Integer.parseInt(input.trim());
+            treeManager.deleteValue(selected, valueToDelete);
+            messagesArea.setText("Nodo " + input + " eliminado del árbol " + selected + ".");
+            redrawSelectedTree();
+            valueField.clear();
+        } catch (NumberFormatException e) {
+            messagesArea.setText("Error: Debe ingresar un número entero válido.");
+        } catch (ValueNotFoundException e) {
+            messagesArea.setText(e.getMessage());
+        } catch (IllegalStateException e) {
+            messagesArea.setText("Error de estado: " + e.getMessage());
+        } catch (Exception e) {
+            messagesArea.setText("Error inesperado: " + e.getMessage());
+        }
     }
 
     @FXML
